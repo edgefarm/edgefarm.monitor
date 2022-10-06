@@ -6,7 +6,7 @@
 [stars-url]: https://github.com/edgefarm/edgefarm.monitor/stargazers
 [issues-shield]: https://img.shields.io/github/issues/edgefarm/edgefarm.monitor.svg?style=for-the-badge
 [issues-url]: https://github.com/edgefarm/edgefarm.monitor/issues
-[license-shield]: https://img.shields.io/badge/License-MIT-yellow.svg
+[license-shield]: https://img.shields.io/github/license/edgefarm/semantic-release-helm-oci?logo=mit&style=for-the-badge
 [license-url]: https://opensource.org/licenses/MIT
 
 
