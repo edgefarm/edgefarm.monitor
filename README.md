@@ -1,3 +1,15 @@
+[contributors-shield]: https://img.shields.io/github/contributors/edgefarm/edgefarm.monitor.svg?style=for-the-badge
+[contributors-url]: https://github.com/edgefarm/edgefarm.monitor/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/edgefarm/edgefarm.monitor.svg?style=for-the-badge
+[forks-url]: https://github.com/edgefarm/edgefarm.monitor/network/members
+[stars-shield]: https://img.shields.io/github/stars/edgefarm/edgefarm.monitor.svg?style=for-the-badge
+[stars-url]: https://github.com/edgefarm/edgefarm.monitor/stargazers
+[issues-shield]: https://img.shields.io/github/issues/edgefarm/edgefarm.monitor.svg?style=for-the-badge
+[issues-url]: https://github.com/edgefarm/edgefarm.monitor/issues
+[license-shield]: https://img.shields.io/github/issues/edgefarm/edgefarm.monitor.svg?style=for-the-badge
+[license-url]: https://github.com/edgefarm/edgefarm.monitor/issues
+
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
