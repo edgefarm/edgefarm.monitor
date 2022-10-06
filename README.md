@@ -20,7 +20,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/edgefarm/edgefarm.monitor">
-    <img src="https://github.com/edgefarm/edgefarm.monitor/raw/main/.images/EdgefarmLogoWithText.png" alt="Logo" width="112" height="112">
+    <img src="https://github.com/edgefarm/edgefarm.monitor/raw/main/.images/EdgefarmLogoWithText.png" alt="Logo" height="112">
   </a>
 
   <h2 align="center">edgefarm.monitor</h2>
