@@ -1,0 +1,39 @@
+version: v2beta1
+
+pipelines:
+  deploy-monitoring: |-
+    # install grafana mimir
+    create_deployments grafana
+    create_deployments grafana-mimir
+
+  deploy-nats: |-
+    # deploy nats
+    create_deployments nats
+
+deployments:
+  grafana-mimir:
+    helm:
+      chart:
+        name: mimir-distributed
+        repo: https://grafana.github.io/helm-charts 
+      valuesFiles: 
+      - ./charts/mimir/values.yaml
+    namespace: monitoring
+
+  grafana:
+    helm:
+      chart:
+        name: grafana
+        repo: https://grafana.github.io/helm-charts 
+      valuesFiles: 
+      - ./charts/grafana/values.yaml
+    namespace: monitoring
+
+  nats:
+    helm:
+      chart:
+        name: nats
+        repo: https://nats-io.github.io/k8s/helm/charts/
+      valuesFiles: 
+      - ./charts/nats/values.yaml
+    namespace: nats
