@@ -71,5 +71,5 @@ dashboardProviders:
 dashboards:
   default:
     local-dashboard:
-      url: https://raw.githubusercontent.com/nats-io/prometheus-nats-exporter/main/walkthrough/grafana-jetstream-dash-helm.json
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_dashboards/dashboards/nats.json
       token: ''

@@ -1,0 +1,14 @@
+apiVersion: monitoring.grafana.com/v1alpha1
+kind: MetricsInstance
+metadata:
+  name: nats
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/component: meta-monitoring
+    app.kubernetes.io/instance: grafana-mimir
+    app.kubernetes.io/name: mimir
+spec:
+  remoteWrite:
+    - url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}

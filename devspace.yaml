@@ -6,10 +6,15 @@ pipelines:
     create_deployments grafana
     create_deployments grafana-mimir
 
+  deploy-agent: |-
+    # install grafana grafana agent
+    create_deployments grafana-agent
+    create_deployments monitoiring-resources-for-nats
+    
   deploy-nats: |-
     # deploy nats
     create_deployments nats
-
+    
 deployments:
   grafana-mimir:
     helm:
@@ -29,6 +34,15 @@ deployments:
       - ./charts/grafana/values.yaml
     namespace: monitoring
 
+  grafana-agent:
+    helm:
+      chart:
+        name: grafana-agent-operator
+        repo: https://grafana.github.io/helm-charts
+      valuesFiles: 
+      - ./charts/grafana-agent/values.yaml
+    namespace: monitoring
+
   nats:
     helm:
       chart:
@@ -37,3 +51,12 @@ deployments:
       valuesFiles: 
       - ./charts/nats/values.yaml
     namespace: nats
+
+  monitoiring-resources-for-nats:
+    kubectl:
+      manifests:
+        - ./charts/grafana-agent/nats_metric.yaml
+        - ./charts/grafana-agent/service-monitor-nats.yaml
+        - ./charts/grafana-agent/rbac_grafana_agent.yaml
+        - ./charts/grafana-agent/nats_grafana_agent.yaml
+    namespace: monitoring
