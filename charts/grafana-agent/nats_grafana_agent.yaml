@@ -12,7 +12,6 @@ spec:
   metrics:
     instanceSelector:
       matchLabels:
-        # agent: grafana-agent-metrics
         app.kubernetes.io/component: meta-monitoring
         app.kubernetes.io/instance: grafana-mimir
         app.kubernetes.io/name: mimir

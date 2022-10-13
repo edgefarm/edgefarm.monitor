@@ -56,7 +56,6 @@ deployments:
     kubectl:
       manifests:
         - ./charts/grafana-agent/nats_metric.yaml
-        - ./charts/grafana-agent/service-monitor-nats.yaml
         - ./charts/grafana-agent/rbac_grafana_agent.yaml
         - ./charts/grafana-agent/nats_grafana_agent.yaml
     namespace: monitoring
