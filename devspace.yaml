@@ -1,13 +1,9 @@
 version: v2beta1
 
 pipelines:
-  deploy-monitoring: |-
-    # install grafana mimir
-    create_deployments grafana
-    create_deployments grafana-mimir
-
   deploy-agent: |-
     # install grafana grafana agent
+    create_deployments monitoiring-secret-for-grafana-agent
     create_deployments grafana-agent
     create_deployments monitoiring-resources-for-nats
     
@@ -15,6 +11,16 @@ pipelines:
     # deploy nats
     create_deployments nats
     
+  deploy-node-exporter: |-
+    # deploy node exporter
+    create_deployments node-exporter
+    create_deployments service-monitor-for-node-exporter
+
+  deploy-monitoring: |-
+    # install grafana mimir
+    create_deployments grafana
+    create_deployments grafana-mimir
+
 deployments:
   grafana-mimir:
     helm:
@@ -43,6 +49,12 @@ deployments:
       - ./charts/grafana-agent/values.yaml
     namespace: monitoring
 
+  monitoiring-secret-for-grafana-agent:
+    kubectl:
+      manifests:
+        - ./charts/grafana-agent/secret.yaml
+    namespace: monitoring
+
   nats:
     helm:
       chart:
@@ -52,10 +64,26 @@ deployments:
       - ./charts/nats/values.yaml
     namespace: nats
 
+  node-exporter:
+    helm:
+      chart:
+        name: prometheus-node-exporter
+        repo: https://prometheus-community.github.io/helm-charts
+      valuesFiles: 
+      - ./charts/node-exporter/service-monitor.yaml
+    namespace: monitoring
+
+  service-monitor-for-node-exporter:
+    kubectl:
+      manifests:
+        - ./charts/grafana-agent/nats_metric_instance.yaml
+    namespace: monitoring
+
+
   monitoiring-resources-for-nats:
     kubectl:
       manifests:
-        - ./charts/grafana-agent/nats_metric.yaml
+        - ./charts/grafana-agent/nats_metric_instance.yaml
         - ./charts/grafana-agent/rbac_grafana_agent.yaml
         - ./charts/grafana-agent/nats_grafana_agent.yaml
     namespace: monitoring

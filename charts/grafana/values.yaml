@@ -1,40 +1,14 @@
 ingress:
   enabled: true
-  # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
-  # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
-  # ingressClassName: nginx
-  # Values can be templated
   annotations: 
     kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
   labels: {}
   path: /
 
-  # pathType is only for k8s >= 1.1=
   pathType: Prefix
 
   hosts:
     - grafana.10-5-0-30.nip.io
-  ## Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
-  extraPaths: []
-  # - path: /*
-  #   backend:
-  #     serviceName: ssl-redirect
-  #     servicePort: use-annotation
-  ## Or for k8s > 1.19
-  # - path: /*
-  #   pathType: Prefix
-  #   backend:
-  #     service:
-  #       name: ssl-redirect
-  #       port:
-  #         name: use-annotation
-
-
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 datasources:
  datasources.yaml:
@@ -44,16 +18,13 @@ datasources:
      type: prometheus
      url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
      access: proxy
+     basicAuth: true
+     basicAuthUser: nats
+     withCredentials: true
      isDefault: true
-#    - name: CloudWatch
-#      type: cloudwatch
-#      access: proxy
-#      uid: cloudwatch
-#      editable: false
-#      jsonData:
-#        authType: default
-#        defaultRegion: us-east-1
-
+     editable: true
+     secureJsonData:
+       basicAuthPassword: test
 
 dashboardProviders:
  dashboardproviders.yaml:
@@ -70,6 +41,21 @@ dashboardProviders:
 
 dashboards:
   default:
-    local-dashboard:
+    nats-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_dashboards/dashboards/nats.json
       token: ''
+    node-exporter-dashboard:
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_dashboards/dashboards/node_exporter.json
+      token: ''
+
+#if you want persistend disk 
+# persistence:
+#   type: pvc
+#   enabled: true
+#   # storageClassName: default
+#   accessModes:
+#     - ReadWriteOnce
+#   size: 1Gi
+#   # annotations: {}
+#   finalizers:
+#     - kubernetes.io/pvc-protection
