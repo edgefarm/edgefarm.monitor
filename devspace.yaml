@@ -2,15 +2,15 @@ version: v2beta1
 
 pipelines:
   deploy-agent: |-
-    # install grafana grafana agent
-    create_deployments monitoiring-secret-for-grafana-agent
+    # install grafana agent
+    create_deployments monitoring-secret-for-grafana-agent
     create_deployments grafana-agent
-    create_deployments monitoiring-resources-for-nats
-    
+    create_deployments monitoring-resources-for-nats
+
   deploy-nats: |-
     # deploy nats
     create_deployments nats
-    
+
   deploy-node-exporter: |-
     # deploy node exporter
     create_deployments node-exporter
@@ -26,8 +26,8 @@ deployments:
     helm:
       chart:
         name: mimir-distributed
-        repo: https://grafana.github.io/helm-charts 
-      valuesFiles: 
+        repo: https://grafana.github.io/helm-charts
+      valuesFiles:
       - ./charts/mimir/values.yaml
     namespace: monitoring
 
@@ -35,8 +35,8 @@ deployments:
     helm:
       chart:
         name: grafana
-        repo: https://grafana.github.io/helm-charts 
-      valuesFiles: 
+        repo: https://grafana.github.io/helm-charts
+      valuesFiles:
       - ./charts/grafana/values.yaml
     namespace: monitoring
 
@@ -45,11 +45,11 @@ deployments:
       chart:
         name: grafana-agent-operator
         repo: https://grafana.github.io/helm-charts
-      valuesFiles: 
+      valuesFiles:
       - ./charts/grafana-agent/values.yaml
     namespace: monitoring
 
-  monitoiring-secret-for-grafana-agent:
+  monitoring-secret-for-grafana-agent:
     kubectl:
       manifests:
         - ./charts/grafana-agent/secret.yaml
@@ -60,7 +60,7 @@ deployments:
       chart:
         name: nats
         repo: https://nats-io.github.io/k8s/helm/charts/
-      valuesFiles: 
+      valuesFiles:
       - ./charts/nats/values.yaml
     namespace: nats
 
@@ -69,7 +69,7 @@ deployments:
       chart:
         name: prometheus-node-exporter
         repo: https://prometheus-community.github.io/helm-charts
-      valuesFiles: 
+      valuesFiles:
       - ./charts/node-exporter/service-monitor.yaml
     namespace: monitoring
 
@@ -80,7 +80,7 @@ deployments:
     namespace: monitoring
 
 
-  monitoiring-resources-for-nats:
+  monitoring-resources-for-nats:
     kubectl:
       manifests:
         - ./charts/grafana-agent/nats_metric_instance.yaml
