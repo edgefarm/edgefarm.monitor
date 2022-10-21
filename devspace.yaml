@@ -16,10 +16,16 @@ pipelines:
     create_deployments node-exporter
     create_deployments service-monitor-for-node-exporter
 
-  deploy-monitoring: |-
-    # install grafana mimir
+  deploy-mimir-grafana: |-
+    # install grafana and mimir
     create_deployments grafana
     create_deployments grafana-mimir
+
+  deploy-monitoring: |-
+    # install all monitoring setup
+    run_pipelines deploy-agent
+    run_pipelines deploy-nats deploy-node-exporter
+    run_pipelines deploy-mimir-grafana
 
 deployments:
   grafana-mimir:
@@ -28,7 +34,7 @@ deployments:
         name: mimir-distributed
         repo: https://grafana.github.io/helm-charts 
       valuesFiles: 
-      - ./charts/mimir/values.yaml
+      - ./dev/charts/mimir/values.yaml
     namespace: monitoring
 
   grafana:
@@ -37,7 +43,7 @@ deployments:
         name: grafana
         repo: https://grafana.github.io/helm-charts 
       valuesFiles: 
-      - ./charts/grafana/values.yaml
+      - ./dev/charts/grafana/values.yaml
     namespace: monitoring
 
   grafana-agent:
@@ -46,13 +52,13 @@ deployments:
         name: grafana-agent-operator
         repo: https://grafana.github.io/helm-charts
       valuesFiles: 
-      - ./charts/grafana-agent/values.yaml
+      - ./dev/charts/grafana-agent/values.yaml
     namespace: monitoring
 
   monitoiring-secret-for-grafana-agent:
     kubectl:
       manifests:
-        - ./charts/grafana-agent/secret.yaml
+        - ./dev/charts/grafana-agent/secret.yaml
     namespace: monitoring
 
   nats:
@@ -61,7 +67,7 @@ deployments:
         name: nats
         repo: https://nats-io.github.io/k8s/helm/charts/
       valuesFiles: 
-      - ./charts/nats/values.yaml
+      - ./dev/charts/nats/values.yaml
     namespace: nats
 
   node-exporter:
@@ -70,20 +76,20 @@ deployments:
         name: prometheus-node-exporter
         repo: https://prometheus-community.github.io/helm-charts
       valuesFiles: 
-      - ./charts/node-exporter/service-monitor.yaml
+      - ./dev/charts/node-exporter/values.yaml
     namespace: monitoring
 
   service-monitor-for-node-exporter:
     kubectl:
       manifests:
-        - ./charts/grafana-agent/nats_metric_instance.yaml
+        - ./dev/charts/node-exporter/service-monitor.yaml
     namespace: monitoring
 
 
   monitoiring-resources-for-nats:
     kubectl:
       manifests:
-        - ./charts/grafana-agent/nats_metric_instance.yaml
-        - ./charts/grafana-agent/rbac_grafana_agent.yaml
-        - ./charts/grafana-agent/nats_grafana_agent.yaml
+        - ./dev/charts/grafana-agent/nats_metric_instance.yaml
+        - ./dev/charts/grafana-agent/rbac_grafana_agent.yaml
+        - ./dev/charts/grafana-agent/nats_grafana_agent.yaml
     namespace: monitoring
