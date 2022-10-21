@@ -2,15 +2,15 @@ version: v2beta1
 
 pipelines:
   deploy-agent: |-
-    # install grafana grafana agent
-    create_deployments monitoiring-secret-for-grafana-agent
+    # install grafana agent
+    create_deployments monitoring-secret-for-grafana-agent
     create_deployments grafana-agent
-    create_deployments monitoiring-resources-for-nats
-    
+    create_deployments monitoring-resources-for-nats
+
   deploy-nats: |-
     # deploy nats
     create_deployments nats
-    
+
   deploy-node-exporter: |-
     # deploy node exporter
     create_deployments node-exporter
@@ -55,7 +55,7 @@ deployments:
       - ./dev/charts/grafana-agent/values.yaml
     namespace: monitoring
 
-  monitoiring-secret-for-grafana-agent:
+  monitoring-secret-for-grafana-agent:
     kubectl:
       manifests:
         - ./dev/charts/grafana-agent/secret.yaml
@@ -86,7 +86,7 @@ deployments:
     namespace: monitoring
 
 
-  monitoiring-resources-for-nats:
+  monitoring-resources-for-nats:
     kubectl:
       manifests:
         - ./dev/charts/grafana-agent/nats_metric_instance.yaml
