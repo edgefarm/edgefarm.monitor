@@ -1,0 +1,27 @@
+apiVersion: apps.kubeedge.io/v1alpha1
+kind: EdgeApplication
+metadata:
+  name: node-exporter
+  labels: 
+    app.kubernetes.io/name: prometheus-node-exporter
+  namespace: nodegroup
+spec:
+  workloadTemplate:
+    manifests:
+     - apiVersion: apps/v1
+       kind: DaemonSet
+       metadata:
+         name: {{ template "prometheus-node-exporter.fullname" . }}
+         namespace: {{ template "prometheus-node-exporter.namespace" . }}
+         labels: {{ include "prometheus-node-exporter.labels" . | indent 11 }}
+       spec:
+         selector:
+           matchLabels:
+             {{- include "prometheus-node-exporter.selectorLabels" . | indent 13 }}
+         {{- if .Values.updateStrategy }}
+         updateStrategy:
+{{ toYaml .Values.updateStrategy | indent 11 }}
+         {{- end }}
+
+
+
