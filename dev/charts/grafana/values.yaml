@@ -40,10 +40,10 @@ dashboardProviders:
 dashboards:
   default:
     nats-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_dashboards/dashboards/nats.json
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/nats.json
       token: ''
     node-exporter-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_dashboards/dashboards/node_exporter.json
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
       token: ''
 
 #if you want persistend disk
