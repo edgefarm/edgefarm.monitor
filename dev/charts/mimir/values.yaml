@@ -1,0 +1,17 @@
+nginx:
+  basicAuth:
+    enabled: true
+    username: nats
+    password: test
+    htpasswd: >-
+      {{ htpasswd (required "'nginx.basicAuth.username' is required" .Values.nginx.basicAuth.username) (required "'nginx.basicAuth.password' is required" .Values.nginx.basicAuth.password) }}
+metaMonitoring:
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+
+  grafanaAgent:
+    metrics:
+      enabled: true
+      remote:
+        url: 'http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push'
