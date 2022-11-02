@@ -1,0 +1,90 @@
+apiVersion: apps.kubeedge.io/v1alpha1
+kind: EdgeApplication
+metadata:
+  name: grafana-agent
+  labels: 
+    app.kubernetes.io/name: grafana-agent
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+spec:
+  workloadTemplate:
+    manifests:
+      - apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          namespace: {{ .Values.namespace | default .Release.Namespace }}
+          name: {{ include "ga-operator.fullname" . }}
+          labels:
+{{ include "ga-operator.labels" . | indent 12 }}
+          {{- with .Values.annotations }}
+          annotations:
+          {{- toYaml . | nindent 4 }}
+          {{- end }}
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+{{ include "ga-operator.selectorLabels" . | indent 14 }}
+          template:
+            metadata:
+              labels:
+{{ include "ga-operator.selectorLabels" . | indent 16 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 16 }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+              annotations:
+        {{ toYaml . | indent 16 }}
+        {{- end }}
+            spec:
+              {{- with .Values.podSecurityContext }}
+              securityContext:
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+              containers:
+              - name: {{ include "ga-operator.name" . }}
+                image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+                imagePullPolicy: {{ .Values.image.pullPolicy }}
+                {{- with .Values.containerSecurityContext }}
+                securityContext:
+                {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.resources }}
+                resources:
+                {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- if or (and .Values.kubeletService.namespace .Values.kubeletService.serviceName) (.Values.extraArgs) }}
+                volumeMounts: 
+                  - name: agent-yaml
+                    mountPath: /etc/agent/
+                args:
+                  {{- if .Values.extraArgs  }}
+                  {{- range .Values.extraArgs  }}
+                  - {{ . }}
+                  {{- end }}
+                  {{- end }}
+                {{- end }}
+              {{- with .Values.image.pullSecrets }}
+              imagePullSecrets:
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.nodeSelector }}
+              nodeSelector:
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.tolerations }}
+              volumes:
+                - name: agent-yaml
+                  configMap: 
+                    name: grafana-agent-yml
+              tolerations:
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.affinity }}
+              affinity:
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+  workloadScope:
+    targetNodeGroups:
+      {{- with .Values.targetNodeGroups }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
