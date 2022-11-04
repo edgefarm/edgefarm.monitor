@@ -14,7 +14,7 @@ datasources:
    datasources:
    - name: mimir
      type: prometheus
-     url: http://grafana-mimir-nginx.monitoring.svc:10080/prometheus
+     url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
      access: proxy
      basicAuth: true
      basicAuthUser: nats

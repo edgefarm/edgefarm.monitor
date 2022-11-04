@@ -22,9 +22,15 @@ containerSecurityContext: {}
 configmap:
   agent_yaml:
     global:
-      remote_write: http://192.168.1.91:9009/api/v1/push
+      remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
     config:
-      targets: '10.96.214.78:9100'
+      targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
+      remote_write:
+        url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+        basic_auth:
+          username: nats
+          password: YjU3ZGQ5YzFhYWRlM2Y3OWI1YjJkZTE1
+
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
@@ -56,7 +62,8 @@ kubeletService:
   serviceName: kubelet
 
 # -- List of additional cli arguments to configure agent-operator (example: `--log.level`)
-extraArgs: []
+extraArgs: {}
+  # - --log.levelasdf
 
 # -- Resource limits and requests config
 resources: {}
@@ -82,6 +89,5 @@ affinity:
               operator: Exists
 
 targetNodeGroups:
-  - name: virtual-25af4f51
-  - name: virtual-3da802e0
-  - name: virtual-e2ddb58a 
+  - name: virtual-76e10dd0
+  - name: virtual-df390aee

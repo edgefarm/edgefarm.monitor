@@ -21,4 +21,7 @@ data:
               static_configs:
                 - targets: {{ .Values.configmap.agent_yaml.config.targets }}
           remote_write:
-            - url: {{ .Values.configmap.agent_yaml.remote_write }}
+            - url: {{ .Values.configmap.agent_yaml.config.remote_write.url }}
+              basic_auth: 
+                username: {{ .Values.configmap.agent_yaml.config.remote_write.basic_auth.username }}
+                password: {{ .Values.configmap.agent_yaml.config.remote_write.basic_auth.password }}

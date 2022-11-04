@@ -1,26 +1,6 @@
 nginx:
-  podAnnotations:
-    edgefarm.io/hostNetwork: "true"
-  
-  service:
-    # -- Port of the nginx service
-    port: 10080
-    # -- Type of the nginx service
-    type: ClusterIP
-    # -- ClusterIP of the nginx service
-    clusterIP: null
-    # -- Node port if service type is NodePort
-    nodePort: null
-    # -- Load balancer IPO address if service type is LoadBalancer
-    loadBalancerIP: null
-    # -- Annotations for the nginx service
-    annotations: {}
-    # -- Labels for nginx service
-    labels: {}
-  # Ingress configuration
   basicAuth:
-  
-    enabled: true
+    enabled: false
     username: nats
     password: test
     htpasswd: >-
@@ -34,22 +14,5 @@ metaMonitoring:
     metrics:
       enabled: true
       remote:
-        url: 'http://grafana-mimir-nginx.monitoring.svc:10080/api/v1/push'
+        url: 'http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push'
 
-
-
-# draft of working
-  agent.yaml: |
-    server:
-      log_level: info
-    metrics:
-      global:
-        scrape_interval: 1m
-      configs:
-        - name: agent
-          scrape_configs:
-            - job_name: node-exporter
-              static_configs:
-                - targets: ['node-exporter-prometheus-node-exporter.nodegroup.svc.cluster.local:9100']
-          remote_write:
-            - url: http://192.168.0.46:9009/api/v1/push
