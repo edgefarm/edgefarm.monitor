@@ -269,8 +269,9 @@ verticalPodAutoscaler:
     # updateMode: Auto
     
 targetNodeGroups:
-  - name: virtual-76e10dd0
-  - name: virtual-df390aee
+  - name: virtual-4dcd3e83
+  - name: virtual-85d9898b
+  - name: virtual-fe66d2b1
 
 
 

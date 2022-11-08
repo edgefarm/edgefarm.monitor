@@ -14,12 +14,18 @@ data:
         scrape_interval: 1m
         remote_write:
           - url: {{ .Values.configmap.agent_yaml.global.remote_write }}
+        external_labels:
+          edge_node: ${NODE_NAME}
       configs:
-        - name: default
+        - name: node-exporter-edgenodes
           scrape_configs:
             - job_name: agent
               static_configs:
                 - targets: {{ .Values.configmap.agent_yaml.config.targets }}
+              relabel_configs:
+              - source_labels: [__address__]
+                target_label: instance
+                replacement: ${NODE_NAME}
           remote_write:
             - url: {{ .Values.configmap.agent_yaml.config.remote_write.url }}
               basic_auth: 
