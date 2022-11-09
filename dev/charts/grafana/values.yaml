@@ -45,6 +45,7 @@ dashboards:
     node-exporter-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
       token: ""
+      
 #if you want persistend disk
 # persistence:
 #   type: pvc

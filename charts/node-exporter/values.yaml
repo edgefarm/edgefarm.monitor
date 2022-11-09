@@ -7,7 +7,6 @@ image:
   tag: ""
   pullPolicy: IfNotPresent
   sha: ""
-
 imagePullSecrets: []
 # - name: "image-pull-secret"
 
@@ -20,7 +19,6 @@ service:
   listenOnAllInterfaces: true
   annotations:
     prometheus.io/scrape: "true"
-
 # Additional environment variables that will be passed to the daemonset
 env: {}
 ##  env:
@@ -31,46 +29,39 @@ prometheus:
     enabled: false
     additionalLabels: {}
     namespace: ""
-
     jobLabel: ""
-
     scheme: http
     basicAuth: {}
     bearerTokenFile:
     tlsConfig: {}
-
     ## proxyUrl: URL of a proxy that should be used for scraping.
     ##
     proxyUrl: ""
-
     ## Override serviceMonitor selector
     ##
     selectorOverride: {}
-
     relabelings: []
     metricRelabelings: []
     interval: ""
     scrapeTimeout: 10s
     ## prometheus.monitor.apiVersion ApiVersion for the serviceMonitor Resource(defaults to "monitoring.coreos.com/v1")
     apiVersion: ""
-
 ## Customize the updateStrategy if set
 updateStrategy:
   type: RollingUpdate
   rollingUpdate:
     maxUnavailable: 1
-
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 200m
-  #   memory: 50Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 30Mi
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#   cpu: 200m
+#   memory: 50Mi
+# requests:
+#   cpu: 100m
+#   memory: 30Mi
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -81,17 +72,15 @@ serviceAccount:
   annotations: {}
   imagePullSecrets: []
   automountServiceAccountToken: false
-
 securityContext:
   fsGroup: 65534
   runAsGroup: 65534
   runAsNonRoot: true
   runAsUser: 65534
-
 containerSecurityContext: {}
-  # capabilities:
-  #   add:
-  #   - SYS_TIME
+# capabilities:
+#   add:
+#   - SYS_TIME
 
 rbac:
   ## If true, create & use RBAC resources
@@ -101,17 +90,13 @@ rbac:
   ## https://kubernetes.io/docs/concepts/policy/pod-security-policy/
   pspEnabled: true
   pspAnnotations: {}
-
 # for deployments that have node_exporter deployed outside of the cluster, list
 # their addresses here
 endpoints: []
-
 # Expose the service to the host network
 hostNetwork: true
-
 # Share the host process ID namespace
 hostPID: true
-
 # Mount the node's root file system (/) at /host/root in the container
 hostRootFsMount:
   enabled: true
@@ -121,7 +106,6 @@ hostRootFsMount:
   # None is used. More information on:
   # https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation
   mountPropagation: HostToContainer
-
 ## Assign a group of affinity scheduling rules
 ##
 affinity: {}
@@ -138,13 +122,10 @@ affinity: {}
 podAnnotations:
   # Fix for very slow GKE cluster upgrades
   cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-
 # Extra labels to be added to node exporter pods
 podLabels: {}
-
 ## set to true to add the release label so scraping of the servicemonitor with kube-prometheus-stack works out of the box
 releaseLabel: false
-
 # Custom DNS configuration to be added to prometheus-node-exporter pods
 dnsConfig: {}
 # nameservers:
@@ -167,7 +148,6 @@ tolerations:
   - effect: NoExecute
     key: edgefarm.applications
     operator: Exists
-
 ## Assign a PriorityClassName to pods if set
 # priorityClassName: ""
 
@@ -197,7 +177,6 @@ secrets: []
 ## Override the deployment namespace
 ##
 namespaceOverride: ""
-
 ## Additional containers for export metrics to text file
 ##
 sidecars: []
@@ -223,7 +202,6 @@ sidecarHostVolumeMounts: []
 ## Additional InitContainers to initialize the pod
 ##
 extraInitContainers: []
-
 ## Liveness probe
 ##
 livenessProbe:
@@ -235,7 +213,6 @@ livenessProbe:
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
-
 ## Readiness probe
 ##
 readinessProbe:
@@ -247,13 +224,11 @@ readinessProbe:
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
-
 # Enable vertical pod autoscaler support for prometheus-node-exporter
 verticalPodAutoscaler:
   enabled: false
   # List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
   controlledResources: []
-
   # Define the max allowed resources for the pod
   maxAllowed: {}
   # cpu: 200m
@@ -262,17 +237,90 @@ verticalPodAutoscaler:
   minAllowed: {}
   # cpu: 200m
   # memory: 100Mi
+# updatePolicy:
+# Specifies whether recommended updates are applied when a Pod is started and whether recommended updates
+# are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".
+# updateMode: Auto
 
-  # updatePolicy:
-    # Specifies whether recommended updates are applied when a Pod is started and whether recommended updates
-    # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".
-    # updateMode: Auto
-    
 targetNodeGroups:
-  - name: virtual-4dcd3e83
-  - name: virtual-85d9898b
-  - name: virtual-fe66d2b1
-
-
-
-
+  - name: virtual-6a87250b
+  - name: virtual-e602bbba
+---
+# -- Overrides the chart's name
+nameOverride: ""
+# -- Overrides the chart's computed fullname
+fullnameOverride: ""
+# -- Annotations for the Deployment
+annotations: {}
+# -- Annotations for the Deployment Pods
+podAnnotations: {}
+# -- Annotations for the Deployment Pods
+podLabels: {}
+# -- Pod security context (runAsUser, etc.)
+podSecurityContext: {}
+# -- Container security context (allowPrivilegeEscalation, etc.)
+containerSecurityContext: {}
+configmap:
+  agent_yaml:
+    global:
+      remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+    config:
+      targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
+      remote_write:
+        url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+        basic_auth:
+          username: nats
+          password: Mjk0YTA2MzMwMjc4NDYxYzM1YmU1ZDky
+rbac:
+  # -- Toggle to create ClusterRole and ClusterRoleBinding
+  create: true
+  # -- Name of a PodSecurityPolicy to use in the ClusterRole. If unset, no PodSecurityPolicy is used.
+  podSecurityPolicyName: ''
+serviceAccount:
+  # -- Toggle to create ServiceAccount
+  create: true
+  # -- Service account name
+  name:
+image:
+  # -- Image registry
+  registry: docker.io
+  # -- Image repo
+  repository: grafana/agent
+  # -- Image tag
+  tag: v0.28.0
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image pull secrets
+  pullSecrets: []
+# -- If both are set, Agent Operator will create and maintain a service for scraping kubelets
+# https://grafana.com/docs/agent/latest/operator/getting-started/#monitor-kubelets
+kubeletService:
+  namespace: default
+  serviceName: kubelet
+# -- List of additional cli arguments to configure agent-operator (example: `--log.level`)
+# extraArgs: {}
+extraArgs:
+  - -enable-features=integrations-next
+  - -config.file=/etc/agent/agent.yaml
+  - -config.expand-env
+# -- Resource limits and requests config
+resources: {}
+# -- nodeSelector configuration
+nodeSelector: {}
+# -- Tolerations applied to Pods
+tolerations:
+  - effect: NoExecute
+    key: edgefarm.applications
+    operator: Exists
+# -- Pod affinity configuration
+# affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/edge
+              operator: Exists
+targetNodeGroups:
+  - name: virtual-6a87250b
+  - name: virtual-e602bbba
