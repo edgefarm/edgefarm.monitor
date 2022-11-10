@@ -70,3 +70,4 @@ service:
 targetNodeGroups:
   - name: virtual-4c3040f0
   - name: virtual-8cfb80d1
+  - name: virtual-a234e738
