@@ -45,6 +45,9 @@ dashboards:
     node-exporter-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
       token: ""
+    cadviser-dashboard:
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadviser.json
+      token: "" 
       
 #if you want persistend disk
 # persistence:

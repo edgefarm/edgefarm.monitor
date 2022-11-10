@@ -78,5 +78,5 @@ affinity:
             - key: node-role.kubernetes.io/edge
               operator: Exists
 targetNodeGroups:
-  - name: virtual-88934dbb
-  - name: virtual-e8c1df83
+  - name: virtual-4c3040f0
+  - name: virtual-8cfb80d1
