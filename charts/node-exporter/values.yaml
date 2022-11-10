@@ -245,6 +245,7 @@ verticalPodAutoscaler:
 targetNodeGroups:
   - name: virtual-4c3040f0
   - name: virtual-8cfb80d1
+  - name: virtual-a234e738
 ---
 # -- Overrides the chart's name
 nameOverride: ""
@@ -324,3 +325,4 @@ affinity:
 targetNodeGroups:
   - name: virtual-4c3040f0
   - name: virtual-8cfb80d1
+  - name: virtual-a234e738
