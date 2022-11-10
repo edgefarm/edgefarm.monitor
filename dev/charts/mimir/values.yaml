@@ -1,6 +1,6 @@
 nginx:
   basicAuth:
-    enabled: true
+    enabled: false
     username: nats
     password: test
     htpasswd: >-
@@ -15,3 +15,4 @@ metaMonitoring:
       enabled: true
       remote:
         url: 'http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push'
+

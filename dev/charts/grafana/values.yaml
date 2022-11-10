@@ -6,46 +6,46 @@ ingress:
   path: /
   pathType: Prefix
   hosts:
-    - grafana.10-5-0-30.nip.io
+    - grafana.localhost
 
 datasources:
- datasources.yaml:
-   apiVersion: 1
-   datasources:
-   - name: mimir
-     type: prometheus
-     url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
-     access: proxy
-     basicAuth: true
-     basicAuthUser: nats
-     withCredentials: true
-     isDefault: true
-     editable: true
-     secureJsonData:
-       basicAuthPassword: test
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: mimir
+        type: prometheus
+        url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
+        access: proxy
+        basicAuth: true
+        basicAuthUser: nats
+        withCredentials: true
+        isDefault: true
+        editable: true
+        secureJsonData:
+          basicAuthPassword: test
 
 dashboardProviders:
- dashboardproviders.yaml:
-   apiVersion: 1
-   providers:
-   - name: 'default'
-     orgId: 1
-     folder: ''
-     type: file
-     disableDeletion: false
-     editable: true
-     options:
-       path: /var/lib/grafana/dashboards/default
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: "default"
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
 
 dashboards:
   default:
     nats-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/nats.json
-      token: ''
+      token: ""
     node-exporter-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
-      token: ''
-
+      token: ""
+      
 #if you want persistend disk
 # persistence:
 #   type: pvc
