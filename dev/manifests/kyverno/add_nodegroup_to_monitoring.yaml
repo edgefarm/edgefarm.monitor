@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-nodegroup-to-monitoring
+  annotations:
+    policies.kyverno.io/title: add-nodegroup-to-monitoring
+    policies.kyverno.io/description: >-
+      Create a node groups for new joined edge nodes. Deletes the node group if the edge node
+      is removed. Use of this policy requires removal of the Node resource filter in the
+      Kyverno ConfigMap ([Node,*,*]).
+spec:
+  rules:
+    - name: add-to-grafana-agent
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+      preconditions:
+        all:
+          - key: '{{request.object.metadata.labels."node-role.kubernetes.io/edge" }}'
+            operator: Equals
+            value: ""
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: In
+            value:
+              - CREATE
+              - UPDATE
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: grafana-agent
+            namespace: nodegroup
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: node-exporter
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: add
+            path: "/speec/workloadScope/targetNodeGroups"
+            value: "{name : {{request.object.metadata}}}"
