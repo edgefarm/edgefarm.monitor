@@ -243,8 +243,8 @@ verticalPodAutoscaler:
 # updateMode: Auto
 
 targetNodeGroups:
-  - name: virtual-6a87250b
-  - name: virtual-e602bbba
+  - name: virtual-88934dbb
+  - name: virtual-e8c1df83
 ---
 # -- Overrides the chart's name
 nameOverride: ""
@@ -322,5 +322,5 @@ affinity:
             - key: node-role.kubernetes.io/edge
               operator: Exists
 targetNodeGroups:
-  - name: virtual-6a87250b
-  - name: virtual-e602bbba
+  - name: virtual-88934dbb
+  - name: virtual-e8c1df83

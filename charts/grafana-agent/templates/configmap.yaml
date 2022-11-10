@@ -21,7 +21,14 @@ data:
           scrape_configs:
             - job_name: agent
               static_configs:
-                - targets: {{ .Values.configmap.agent_yaml.config.targets }}
+                - targets: {{ .Values.configmap.agent_yaml.config.job.grafana_agent.targets }}
+              relabel_configs:
+              - source_labels: [__address__]
+                target_label: instance
+                replacement: ${NODE_NAME}
+            - job_name: cadviser
+              static_configs:
+                - targets: {{ .Values.configmap.agent_yaml.config.job.cadviser.targets }}
               relabel_configs:
               - source_labels: [__address__]
                 target_label: instance
