@@ -2,7 +2,7 @@ apiVersion: apps.kubeedge.io/v1alpha1
 kind: EdgeApplication
 metadata:
   name: cadviser
-  labels: 
+  labels:
     app.kubernetes.io/name: cadviser
   namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
@@ -59,13 +59,13 @@ spec:
                 {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- if or (and .Values.kubeletService.namespace .Values.kubeletService.serviceName) (.Values.extraArgs) }}
-                volumeMounts: 
+                volumeMounts:
                   - name: rootfs
                     mountPath: /rootfs
                     readOnly: true
                   - name: var-run
                     mountPath: /var/run
-                    readOnly: true
+                    readOnly: false
                   - name: sys
                     mountPath: /sys
                     readOnly: true
