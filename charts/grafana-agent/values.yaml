@@ -19,7 +19,10 @@ configmap:
     config:
       job:
         grafana_agent:
-          targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
+          targets:
+            [
+              "edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100",
+            ]
         cadviser:
           targets: ["edgeapplication-cadviser.nodegroup.svc:8080"]
       remote_write:
@@ -31,7 +34,7 @@ rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
   # -- Name of a PodSecurityPolicy to use in the ClusterRole. If unset, no PodSecurityPolicy is used.
-  podSecurityPolicyName: ''
+  podSecurityPolicyName: ""
 serviceAccount:
   # -- Toggle to create ServiceAccount
   create: true
@@ -77,7 +80,4 @@ affinity:
         - matchExpressions:
             - key: node-role.kubernetes.io/edge
               operator: Exists
-targetNodeGroups:
-  - name: virtual-4c3040f0
-  - name: virtual-8cfb80d1
-  - name: virtual-a234e738
+targetNodeGroups: {}

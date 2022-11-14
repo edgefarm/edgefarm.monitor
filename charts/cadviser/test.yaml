@@ -11,7 +11,7 @@ apiVersion: apps.kubeedge.io/v1alpha1
 kind: EdgeApplication
 metadata:
   name: cadviser
-  labels: 
+  labels:
     app.kubernetes.io/name: cadviser
   namespace: nodegroup
 spec:
@@ -45,42 +45,42 @@ spec:
             spec:
               serviceAccountName: cadvisor
               containers:
-              - name: cadviser
-                image: "gcr.io/cadvisor/cadvisor:v0.45.0"
-                imagePullPolicy: IfNotPresent
-                env:
-                  - name: NODE_NAME
-                    valueFrom:
-                      fieldRef:
-                        fieldPath: spec.nodeName
-                resources:
-                  limits:
-                    cpu: 800m
-                    memory: 2000Mi
-                  requests:
-                    cpu: 400m
-                    memory: 400Mi
-                volumeMounts: 
-                  - name: rootfs
-                    mountPath: /rootfs
-                    readOnly: true
-                  - name: var-run
-                    mountPath: /var/run
-                    readOnly: true
-                  - name: sys
-                    mountPath: /sys
-                    readOnly: true
-                  - name: docker
-                    mountPath: /var/lib/docker
-                    readOnly: true
-                  - name: disk
-                    mountPath: /dev/disk
-                    readOnly: true
-                ports:
-                  - name: http
-                    containerPort: 8080
-                    protocol: TCP
-                args:
+                - name: cadviser
+                  image: "gcr.io/cadvisor/cadvisor:v0.45.0"
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: NODE_NAME
+                      valueFrom:
+                        fieldRef:
+                          fieldPath: spec.nodeName
+                  resources:
+                    limits:
+                      cpu: 800m
+                      memory: 2000Mi
+                    requests:
+                      cpu: 400m
+                      memory: 400Mi
+                  volumeMounts:
+                    - name: rootfs
+                      mountPath: /rootfs
+                      readOnly: true
+                    - name: var-run
+                      mountPath: /var/run
+                      readOnly: true
+                    - name: sys
+                      mountPath: /sys
+                      readOnly: true
+                    - name: docker
+                      mountPath: /var/lib/docker
+                      readOnly: true
+                    - name: disk
+                      mountPath: /dev/disk
+                      readOnly: true
+                  ports:
+                    - name: http
+                      containerPort: 8080
+                      protocol: TCP
+                  args:
               volumes:
                 - name: rootfs
                   hostPath:
@@ -105,32 +105,30 @@ spec:
                 nodeAffinity:
                   requiredDuringSchedulingIgnoredDuringExecution:
                     nodeSelectorTerms:
-                    - matchExpressions:
-                      - key: node-role.kubernetes.io/edge
-                        operator: Exists
+                      - matchExpressions:
+                          - key: node-role.kubernetes.io/edge
+                            operator: Exists
       - apiVersion: v1
         kind: Service
         metadata:
           name: cadviser
           namespace: nodegroup
           labels:
-           app.kubernetes.io/name: cadviser
-           app.kubernetes.io/instance: cadviser
-           app.kubernetes.io/managed-by: Helm
-           app.kubernetes.io/component: operator
-           helm.sh/chart: cadviser-0.1.0
-           app.kubernetes.io/version: "0.1.0"
+            app.kubernetes.io/name: cadviser
+            app.kubernetes.io/instance: cadviser
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/component: operator
+            helm.sh/chart: cadviser-0.1.0
+            app.kubernetes.io/version: "0.1.0"
         spec:
-          type: 
+          type:
           ports:
             - port: 8080
               targetPort: 8080
               protocol: TCP
               name: http
           selector:
-           app.kubernetes.io/name: cadviser
-           app.kubernetes.io/instance: cadviser
+            app.kubernetes.io/name: cadviser
+            app.kubernetes.io/instance: cadviser
   workloadScope:
-    targetNodeGroups:
-      - name: virtual-88934dbb
-      - name: virtual-e8c1df83
+    targetNodeGroups: {}
