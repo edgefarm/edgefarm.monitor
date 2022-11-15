@@ -16,6 +16,7 @@ for str in ${array[@]}; do
   echo $str >> node.yaml
 done
 
+
 sed -i -e 's/.*targetNodeGroups:.*/targetNodeGroups:/' ./charts/node-exporter/values.yaml ./charts/cadviser/values.yaml ./charts/grafana-agent/values.yaml
 sed -i -e '/targetNodeGroups:/r node.yaml' ./charts/node-exporter/values.yaml ./charts/cadviser/values.yaml ./charts/grafana-agent/values.yaml
 rm -f node.yaml
