@@ -33,9 +33,8 @@ pipelines:
 
   deploy-edge-applications: |-
     # install grafana-agent and node-exporter edge applicaitons
-    bash node_names.sh
     create_deployments edgeapplication-node-exporter
-    create_deployments edgeapplication-cadviser
+    create_deployments edgeapplication-cadvisor
     create_deployments edgeapplication-grafana-agent
 
 deployments:
@@ -43,10 +42,10 @@ deployments:
     helm:
       chart:
         name: mimir-distributed
-        repo: https://grafana.github.io/helm-charts 
-      valuesFiles: 
-      - ./dev/charts/mimir/values.yaml
-      values: 
+        repo: https://grafana.github.io/helm-charts
+      valuesFiles:
+        - ./dev/charts/mimir/values.yaml
+      values:
         nginx:
           basicAuth:
             password: ${mimir_password}
@@ -56,24 +55,24 @@ deployments:
     helm:
       chart:
         name: grafana
-        repo: https://grafana.github.io/helm-charts 
-      valuesFiles: 
-      - ./dev/charts/grafana/values.yaml
-      values: 
+        repo: https://grafana.github.io/helm-charts
+      valuesFiles:
+        - ./dev/charts/grafana/values.yaml
+      values:
         datasources:
-         datasources.yaml:
-           datasources:
-           - name: mimir
-             type: prometheus
-             url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
-             access: proxy
-             basicAuth: true
-             basicAuthUser: nats
-             withCredentials: true
-             isDefault: true
-             editable: true
-             secureJsonData:
-               basicAuthPassword: ${mimir_password}
+          datasources.yaml:
+            datasources:
+              - name: mimir
+                type: prometheus
+                url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
+                access: proxy
+                basicAuth: true
+                basicAuthUser: nats
+                withCredentials: true
+                isDefault: true
+                editable: true
+                secureJsonData:
+                  basicAuthPassword: ${mimir_password}
     namespace: monitoring
 
   edgeapplication-node-exporter:
@@ -86,7 +85,7 @@ deployments:
     helm:
       chart:
         name: ./charts/grafana-agent/
-      values: 
+      values:
         configmap:
           agent_yaml:
             config:
@@ -96,10 +95,10 @@ deployments:
                   password: ${mimir_password}
     namespace: nodegroup
 
-  edgeapplication-cadviser:
+  edgeapplication-cadvisor:
     helm:
       chart:
-        name: ./charts/cadviser/
+        name: ./charts/cadvisor/
     namespace: nodegroup
 
   prometheus-crd:
@@ -120,18 +119,18 @@ deployments:
       chart:
         name: nats
         repo: https://nats-io.github.io/k8s/helm/charts/
-      valuesFiles: 
-      - ./dev/charts/nats/values.yaml
+      valuesFiles:
+        - ./dev/charts/nats/values.yaml
     namespace: nats
 
-#old setup maybe we will need in future
+  #old setup maybe we will need in future
   grafana-agent:
     helm:
       chart:
         name: grafana-agent-operator
         repo: https://grafana.github.io/helm-charts
-      valuesFiles: 
-      - ./dev/charts/grafana-agent/values.yaml
+      valuesFiles:
+        - ./dev/charts/grafana-agent/values.yaml
     namespace: monitoring
 
   node-exporter:
@@ -139,8 +138,8 @@ deployments:
       chart:
         name: prometheus-node-exporter
         repo: https://prometheus-community.github.io/helm-charts
-      valuesFiles: 
-      - ./dev/charts/node-exporter/values.yaml
+      valuesFiles:
+        - ./dev/charts/node-exporter/values.yaml
     namespace: monitoring
 
   monitoring-secret-for-grafana-agent:
@@ -162,5 +161,3 @@ deployments:
       manifests:
         - ./dev/charts/node-exporter/service-monitor.yaml
     namespace: monitoring
-
-    
