@@ -35,14 +35,6 @@ spec:
             kind: EdgeApplication
             name: grafana-agent
             namespace: nodegroup
-          - apiVersion: apps.kubeedge.io/v1alpha1
-            kind: EdgeApplication
-            name: cadvisor
-            namespace: nodegroup
-          - apiVersion: apps.kubeedge.io/v1alpha1
-            kind: EdgeApplication
-            name: node-exporter
-            namespace: nodegroup
         patchesJson6902: |-
           - op: replace
             path: "/spec/workloadScope/targetNodeGroups"
