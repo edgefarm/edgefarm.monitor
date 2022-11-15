@@ -33,11 +33,18 @@ pipelines:
 
   deploy-edge-applications: |-
     # install grafana-agent and node-exporter edge applicaitons
+    create_deployments kyverno-edge-monitoring-config
     create_deployments edgeapplication-node-exporter
     create_deployments edgeapplication-cadvisor
     create_deployments edgeapplication-grafana-agent
 
 deployments:
+  kyverno-edge-monitoring-config:
+    kubectl:
+      manifests:
+        - dev/manifests/kyverno/add_nodegroup_to_edge_monitoring.yaml
+        - dev/manifests/kyverno/remove_nodegroup_from_edge_monitoring.yaml
+
   grafana-mimir:
     helm:
       chart:
