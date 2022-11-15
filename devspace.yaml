@@ -35,6 +35,7 @@ pipelines:
     # install grafana-agent and node-exporter edge applicaitons
     bash node_names.sh
     create_deployments edgeapplication-node-exporter
+    create_deployments edgeapplication-cadviser
     create_deployments edgeapplication-grafana-agent
 
 deployments:
@@ -93,6 +94,12 @@ deployments:
                 basic_auth:
                   username: nats
                   password: ${mimir_password}
+    namespace: nodegroup
+
+  edgeapplication-cadviser:
+    helm:
+      chart:
+        name: ./charts/cadviser/
     namespace: nodegroup
 
   prometheus-crd:

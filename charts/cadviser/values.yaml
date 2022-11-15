@@ -3,7 +3,8 @@ nameOverride: ""
 # -- Overrides the chart's computed fullname
 fullnameOverride: ""
 # -- Annotations for the Deployment
-annotations: {}
+annotations:
+  seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
 # -- Annotations for the Deployment Pods
 podAnnotations: {}
 # -- Annotations for the Deployment Pods
@@ -12,38 +13,18 @@ podLabels: {}
 podSecurityContext: {}
 # -- Container security context (allowPrivilegeEscalation, etc.)
 containerSecurityContext: {}
-configmap:
-  agent_yaml:
-    global:
-      remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-    config:
-      job:
-        grafana_agent:
-          targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
-        cadviser:
-          targets: ["edgeapplication-cadviser.nodegroup.svc:8080"]
-      remote_write:
-        url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-        basic_auth:
-          username: nats
-          password: YzFiYTgzNmNiYWE0ODM4NGI1MjY5ZjAw
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
   # -- Name of a PodSecurityPolicy to use in the ClusterRole. If unset, no PodSecurityPolicy is used.
   podSecurityPolicyName: ''
-serviceAccount:
-  # -- Toggle to create ServiceAccount
-  create: true
-  # -- Service account name
-  name:
 image:
   # -- Image registry
-  registry: docker.io
+  registry: gcr.io
   # -- Image repo
-  repository: grafana/agent
+  repository: cadvisor/cadvisor
   # -- Image tag
-  tag: v0.28.0
+  tag: v0.45.0
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image pull secrets
@@ -55,12 +36,15 @@ kubeletService:
   serviceName: kubelet
 # -- List of additional cli arguments to configure agent-operator (example: `--log.level`)
 # extraArgs: {}
-extraArgs:
-  - -enable-features=integrations-next
-  - -config.file=/etc/agent/agent.yaml
-  - -config.expand-env
+extraArgs: {}
 # -- Resource limits and requests config
-resources: {}
+resources:
+  requests:
+    memory: 400Mi
+    cpu: 400m
+  limits:
+    memory: 2000Mi
+    cpu: 800m
 # -- nodeSelector configuration
 nodeSelector: {}
 # -- Tolerations applied to Pods
@@ -77,6 +61,12 @@ affinity:
         - matchExpressions:
             - key: node-role.kubernetes.io/edge
               operator: Exists
+service:
+  annotations: {}
+  type:
+  port: "8080"
+  targetPort: "8080"
+  portName: http
 targetNodeGroups:
   - name: virtual-4c3040f0
   - name: virtual-8cfb80d1
