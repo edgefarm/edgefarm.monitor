@@ -1,0 +1,111 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remove-nodegroup-from-monitoring
+  annotations:
+    policies.kyverno.io/title: add-nodegroup-to-monitoring
+    policies.kyverno.io/description: >-
+      Removes the nodegroup from the edge monitoring resources if a new edge node is removed.
+spec:
+  mutateExistingOnPolicyUpdate: true
+  rules:
+    - name: delete-from-edge-monitoring-grafana-agent
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+              selector:
+                matchLabels:
+                  node-role.kubernetes.io/edge: ""
+      preconditions:
+        all:
+          - key: "{{ request.operation }}"
+            operator: In
+            value:
+              - DELETE
+      context:
+        - name: grafana_agent_manifest
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/grafana-agent"
+            jmesPath: "spec.workloadScope.targetNodeGroups[?name!='{{request.object.metadata.name}}'] | to_string(@)"
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: grafana-agent
+            namespace: nodegroup
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: cadvisor
+            namespace: nodegroup
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: node-exporter
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: replace
+            path: "/spec/workloadScope/targetNodeGroups"
+            value: {{ grafana_agent_manifest}}
+
+    - name: delete-from-edge-monitoring-node-exporter
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+              selector:
+                matchLabels:
+                  node-role.kubernetes.io/edge: ""
+      preconditions:
+        all:
+          - key: "{{ request.operation }}"
+            operator: In
+            value:
+              - DELETE
+      context:
+        - name: grafana_agent_manifest
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/node-exporter"
+            jmesPath: "spec.workloadScope.targetNodeGroups[?name!='{{request.object.metadata.name}}'] | to_string(@)"
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: node-exporter
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: replace
+            path: "/spec/workloadScope/targetNodeGroups"
+            value: {{ grafana_agent_manifest}}
+
+    - name: delete-from-edge-monitoring-cadvisor
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+              selector:
+                matchLabels:
+                  node-role.kubernetes.io/edge: ""
+      preconditions:
+        all:
+          - key: "{{ request.operation }}"
+            operator: In
+            value:
+              - DELETE
+      context:
+        - name: grafana_agent_manifest
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/cadvisor"
+            jmesPath: "spec.workloadScope.targetNodeGroups[?name!='{{request.object.metadata.name}}'] | to_string(@)"
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: cadvisor
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: replace
+            path: "/spec/workloadScope/targetNodeGroups"
+            value: {{ grafana_agent_manifest}}

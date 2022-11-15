@@ -1,0 +1,136 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-nodegroup-to-monitoring
+  annotations:
+    policies.kyverno.io/title: add-nodegroup-to-monitoring
+    policies.kyverno.io/description: >-
+      Adds the nodegroup to the edge monitoring resources if a new edge node is added.
+spec:
+  mutateExistingOnPolicyUpdate: true
+  rules:
+    - name: add-to-grafana-agent
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+      context:
+        - name: already_defined_in_targets
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/grafana-agent"
+            jmesPath: "spec.workloadScope.targetNodeGroups[?name=='{{request.object.metadata.name}}'] | to_string(@)"
+        - name: targetNodeGroups_defined
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/grafana-agent"
+            jmesPath: "length(spec.workloadScope)"
+      preconditions:
+        any:
+          - key: "{{ targetNodeGroups_defined }}"
+            operator: Equals
+            value: 0
+          - key: "{{ already_defined_in_targets }}"
+            operator: Equals
+            value: "[]"
+        all:
+          - key: '{{request.object.metadata.labels."node-role.kubernetes.io/edge" }}'
+            operator: Equals
+            value: ""
+          - key: "{{ request.operation }}"
+            operator: In
+            value:
+              - UPDATE
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: grafana-agent
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: add
+            path: "/spec/workloadScope/targetNodeGroups/-"
+            value: {"name": "{{request.object.metadata.name}}"}
+
+    - name: add-to-node-exporter
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+      context:
+        - name: already_defined_in_targets
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/node-exporter"
+            jmesPath: "spec.workloadScope.targetNodeGroups[?name=='{{request.object.metadata.name}}'] | to_string(@)"
+        - name: targetNodeGroups_defined
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/node-exporter"
+            jmesPath: "length(spec.workloadScope)"
+      preconditions:
+        any:
+          - key: "{{ targetNodeGroups_defined }}"
+            operator: Equals
+            value: 0
+          - key: "{{ already_defined_in_targets }}"
+            operator: Equals
+            value: "[]"
+        all:
+          - key: '{{request.object.metadata.labels."node-role.kubernetes.io/edge" }}'
+            operator: Equals
+            value: ""
+          - key: "{{ request.operation }}"
+            operator: In
+            value:
+              - UPDATE
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: node-exporter
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: add
+            path: "/spec/workloadScope/targetNodeGroups/-"
+            value: {"name": "{{request.object.metadata.name}}"}
+
+    - name: add-to-cadvisor
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+      context:
+        - name: already_defined_in_targets
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/cadvisor"
+            jmesPath: "spec.workloadScope.targetNodeGroups[?name=='{{request.object.metadata.name}}'] | to_string(@)"
+        - name: targetNodeGroups_defined
+          apiCall:
+            urlPath: "/apis/apps.kubeedge.io/v1alpha1/namespaces/nodegroup/edgeapplications/cadvisor"
+            jmesPath: "length(spec.workloadScope)"
+      preconditions:
+        any:
+          - key: "{{ targetNodeGroups_defined }}"
+            operator: Equals
+            value: 0
+          - key: "{{ already_defined_in_targets }}"
+            operator: Equals
+            value: "[]"
+        all:
+          - key: '{{request.object.metadata.labels."node-role.kubernetes.io/edge" }}'
+            operator: Equals
+            value: ""
+          - key: "{{ request.operation }}"
+            operator: In
+            value:
+              - UPDATE
+      mutate:
+        targets:
+          - apiVersion: apps.kubeedge.io/v1alpha1
+            kind: EdgeApplication
+            name: cadvisor
+            namespace: nodegroup
+        patchesJson6902: |-
+          - op: add
+            path: "/spec/workloadScope/targetNodeGroups/-"
+            value: {"name": "{{request.object.metadata.name}}"}
