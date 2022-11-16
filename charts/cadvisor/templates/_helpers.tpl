@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "cadviser.name" -}}
+{{- define "cadvisor.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "cadviser.fullname" -}}
+{{- define "cadvisor.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,18 +26,18 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "cadviser.chart" -}}
+{{- define "cadvisor.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "cadviser.labels" -}}
-{{ include "cadviser.selectorLabels" . }}
+{{- define "cadvisor.labels" -}}
+{{ include "cadvisor.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/component: operator
-helm.sh/chart: {{ include "cadviser.chart" . }}
+helm.sh/chart: {{ include "cadvisor.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -49,17 +49,17 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{/*
 Selector labels
 */}}
-{{- define "cadviser.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "cadviser.name" . }}
+{{- define "cadvisor.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "cadvisor.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "cadviser.serviceAccountName" -}}
+{{- define "cadvisor.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "cadviser.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "cadvisor.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

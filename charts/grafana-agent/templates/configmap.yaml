@@ -26,15 +26,15 @@ data:
               - source_labels: [__address__]
                 target_label: instance
                 replacement: ${NODE_NAME}
-            - job_name: cadviser
+            - job_name: cadvisor
               static_configs:
-                - targets: {{ .Values.configmap.agent_yaml.config.job.cadviser.targets }}
+                - targets: {{ .Values.configmap.agent_yaml.config.job.cadvisor.targets }}
               relabel_configs:
               - source_labels: [__address__]
                 target_label: instance
                 replacement: ${NODE_NAME}
           remote_write:
             - url: {{ .Values.configmap.agent_yaml.config.remote_write.url }}
-              basic_auth: 
+              basic_auth:
                 username: {{ .Values.configmap.agent_yaml.config.remote_write.basic_auth.username }}
                 password: {{ .Values.configmap.agent_yaml.config.remote_write.basic_auth.password }}
