@@ -242,10 +242,7 @@ verticalPodAutoscaler:
 # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".
 # updateMode: Auto
 
-targetNodeGroups:
-  - name: virtual-4c3040f0
-  - name: virtual-8cfb80d1
-  - name: virtual-a234e738
+targetNodeGroups: []
 ---
 # -- Overrides the chart's name
 nameOverride: ""
@@ -266,7 +263,10 @@ configmap:
     global:
       remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
     config:
-      targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
+      targets:
+        [
+          "edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100",
+        ]
       remote_write:
         url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
         basic_auth:
@@ -276,7 +276,7 @@ rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
   # -- Name of a PodSecurityPolicy to use in the ClusterRole. If unset, no PodSecurityPolicy is used.
-  podSecurityPolicyName: ''
+  podSecurityPolicyName: ""
 serviceAccount:
   # -- Toggle to create ServiceAccount
   create: true
@@ -322,7 +322,4 @@ affinity:
         - matchExpressions:
             - key: node-role.kubernetes.io/edge
               operator: Exists
-targetNodeGroups:
-  - name: virtual-4c3040f0
-  - name: virtual-8cfb80d1
-  - name: virtual-a234e738
+targetNodeGroups: []

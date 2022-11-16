@@ -1,9 +1,9 @@
 apiVersion: apps.kubeedge.io/v1alpha1
 kind: EdgeApplication
 metadata:
-  name: cadviser
+  name: cadvisor
   labels:
-    app.kubernetes.io/name: cadviser
+    app.kubernetes.io/name: cadvisor
   namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
   workloadTemplate:
@@ -12,9 +12,9 @@ spec:
         kind: Deployment
         metadata:
           namespace: {{ .Values.namespace | default .Release.Namespace }}
-          name: {{ include "cadviser.fullname" . }}
+          name: {{ include "cadvisor.fullname" . }}
           labels:
-{{ include "cadviser.labels" . | indent 12 }}
+{{ include "cadvisor.labels" . | indent 12 }}
           {{- with .Values.annotations }}
           annotations:
           {{- toYaml . | nindent 12 }}
@@ -23,11 +23,11 @@ spec:
           replicas: 1
           selector:
             matchLabels:
-{{ include "cadviser.selectorLabels" . | indent 14 }}
+{{ include "cadvisor.selectorLabels" . | indent 14 }}
           template:
             metadata:
               labels:
-{{ include "cadviser.selectorLabels" . | indent 16 }}
+{{ include "cadvisor.selectorLabels" . | indent 16 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 16 }}
         {{- end }}
@@ -42,7 +42,7 @@ spec:
               {{- end }}
               serviceAccountName: cadvisor
               containers:
-              - name: {{ include "cadviser.name" . }}
+              - name: {{ include "cadvisor.name" . }}
                 image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
                 imagePullPolicy: {{ .Values.image.pullPolicy }}
                 env:
@@ -121,10 +121,10 @@ spec:
       - apiVersion: v1
         kind: Service
         metadata:
-          name: {{ template "cadviser.fullname" . }}
+          name: {{ template "cadvisor.fullname" . }}
           namespace: {{ .Values.namespace | default .Release.Namespace }}
           labels:
-{{ include "cadviser.labels"  . | indent 11 }}
+{{ include "cadvisor.labels"  . | indent 11 }}
         {{- if .Values.service.annotations }}
           annotations:
         {{ toYaml .Values.service.annotations | indent 11 }}
@@ -140,7 +140,7 @@ spec:
               protocol: TCP
               name: {{ .Values.service.portName }}
           selector:
-{{ include "cadviser.selectorLabels" . | indent 11 }}
+{{ include "cadvisor.selectorLabels" . | indent 11 }}
   workloadScope:
     targetNodeGroups:
       {{- with .Values.targetNodeGroups }}
