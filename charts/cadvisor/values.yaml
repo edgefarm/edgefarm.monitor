@@ -67,6 +67,4 @@ service:
   port: "8080"
   targetPort: "8080"
   portName: http
-targetNodeGroups:
-  - name: virtual-d2956432
-  - name: virtual-e4ae6922
+targetNodeGroups: []
