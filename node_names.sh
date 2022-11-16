@@ -8,15 +8,15 @@ array=($nodes)
 array=("${array[@]/#/  - name: }")
 touch node.yaml
 
-yq 'del(.targetNodeGroups.[])' -i ./charts/node-exporter/values.yaml 
-yq 'del(.targetNodeGroups.[])' -i ./charts/cadviser/values.yaml
+yq 'del(.targetNodeGroups.[])' -i ./charts/node-exporter/values.yaml
+yq 'del(.targetNodeGroups.[])' -i ./charts/cadvisor/values.yaml
 yq 'del(.targetNodeGroups.[])' -i ./charts/grafana-agent/values.yaml
 
 for str in ${array[@]}; do
-  echo $str >> node.yaml
+    echo $str >> node.yaml
 done
 
 
-sed -i -e 's/.*targetNodeGroups:.*/targetNodeGroups:/' ./charts/node-exporter/values.yaml ./charts/cadviser/values.yaml ./charts/grafana-agent/values.yaml
-sed -i -e '/targetNodeGroups:/r node.yaml' ./charts/node-exporter/values.yaml ./charts/cadviser/values.yaml ./charts/grafana-agent/values.yaml
+sed -i -e 's/.*targetNodeGroups:.*/targetNodeGroups:/' ./charts/node-exporter/values.yaml ./charts/cadvisor/values.yaml ./charts/grafana-agent/values.yaml
+sed -i -e '/targetNodeGroups:/r node.yaml' ./charts/node-exporter/values.yaml ./charts/cadvisor/values.yaml ./charts/grafana-agent/values.yaml
 rm -f node.yaml

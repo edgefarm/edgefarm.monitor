@@ -1,5 +1,5 @@
 apiVersion: v2
 appVersion: 0.1.0
-description: Cadviser helm chart
-name: cadviser
+description: cadvisor helm chart
+name: cadvisor
 version: 0.1.0

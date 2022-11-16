@@ -4,7 +4,7 @@ nameOverride: ""
 fullnameOverride: ""
 # -- Annotations for the Deployment
 annotations:
-  seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+  seccomp.security.alpha.kubernetes.io/pod: "docker/default"
 # -- Annotations for the Deployment Pods
 podAnnotations: {}
 # -- Annotations for the Deployment Pods
@@ -17,7 +17,7 @@ rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
   # -- Name of a PodSecurityPolicy to use in the ClusterRole. If unset, no PodSecurityPolicy is used.
-  podSecurityPolicyName: ''
+  podSecurityPolicyName: ""
 image:
   # -- Image registry
   registry: gcr.io
@@ -68,6 +68,5 @@ service:
   targetPort: "8080"
   portName: http
 targetNodeGroups:
-  - name: virtual-4c3040f0
-  - name: virtual-8cfb80d1
-  - name: virtual-a234e738
+  - name: virtual-d2956432
+  - name: virtual-e4ae6922
