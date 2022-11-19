@@ -45,13 +45,19 @@ dashboards:
     node-exporter-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
       token: ""
+    node-exporter-custom-dashboard:
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/node_exporter_custom.json
+      token: ""
+    docker-containers-dashboard:
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/docker_containers.json
+      token: "" 
     cadvisor-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadviser.json
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadvisor.json
       token: "" 
-    cadvisor-2-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadviser_2.json
+    cadvisor-custom:
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadvisor_custom.json
       token: "" 
-      
+
 #if you want persistend disk
 # persistence:
 #   type: pvc

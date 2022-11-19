@@ -19,13 +19,19 @@ data:
       configs:
         - name: node-exporter-edgenodes
           scrape_configs:
-            - job_name: agent
+            - job_name: node_exporter
               static_configs:
-                - targets: {{ .Values.configmap.agent_yaml.config.job.grafana_agent.targets }}
+                - targets: {{ .Values.configmap.agent_yaml.config.job.node_exporter.targets }}
               relabel_configs:
               - source_labels: [__address__]
                 target_label: instance
                 replacement: ${NODE_NAME}
+              {{- if eq .Values.monitoring "partial" }}
+              metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|(.*disk.*)|(.*filesystem.*)|(.*sockstat.*)|node_uname_info'
+                action: keep
+              {{- end }}
             - job_name: cadvisor
               static_configs:
                 - targets: {{ .Values.configmap.agent_yaml.config.job.cadvisor.targets }}
@@ -33,6 +39,12 @@ data:
               - source_labels: [__address__]
                 target_label: instance
                 replacement: ${NODE_NAME}
+              {{- if eq .Values.monitoring "partial" }}
+              metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|container_last_seen'
+                action: keep
+              {{- end }}
           remote_write:
             - url: {{ .Values.configmap.agent_yaml.config.remote_write.url }}
               basic_auth:

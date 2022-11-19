@@ -242,7 +242,9 @@ verticalPodAutoscaler:
 # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".
 # updateMode: Auto
 
-targetNodeGroups: []
+targetNodeGroups:
+  - name: virtual-72836385
+  - name: virtual-89d577fe
 ---
 # -- Overrides the chart's name
 nameOverride: ""
@@ -263,10 +265,7 @@ configmap:
     global:
       remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
     config:
-      targets:
-        [
-          "edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100",
-        ]
+      targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
       remote_write:
         url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
         basic_auth:
@@ -322,4 +321,6 @@ affinity:
         - matchExpressions:
             - key: node-role.kubernetes.io/edge
               operator: Exists
-targetNodeGroups: []
+targetNodeGroups:
+  - name: virtual-72836385
+  - name: virtual-89d577fe

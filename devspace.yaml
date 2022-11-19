@@ -50,6 +50,7 @@ deployments:
       chart:
         name: mimir-distributed
         repo: https://grafana.github.io/helm-charts
+        version: "3.3.0"
       valuesFiles:
         - ./dev/charts/mimir/values.yaml
       values:
@@ -62,6 +63,7 @@ deployments:
     helm:
       chart:
         name: grafana
+        version: "6.44.0"
         repo: https://grafana.github.io/helm-charts
       valuesFiles:
         - ./dev/charts/grafana/values.yaml
