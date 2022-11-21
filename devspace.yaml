@@ -33,7 +33,6 @@ pipelines:
 
   deploy-edge-applications: |-
     # install grafana-agent and node-exporter edge applicaitons
-    bash node_names.sh
     create_deployments edgeapplication-node-exporter
     create_deployments edgeapplication-cadvisor
     create_deployments edgeapplication-grafana-agent

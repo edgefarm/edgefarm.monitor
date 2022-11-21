@@ -78,6 +78,5 @@ affinity:
         - matchExpressions:
             - key: node-role.kubernetes.io/edge
               operator: Exists
-targetNodeGroups:
-  - name: virtual-72836385
-  - name: virtual-89d577fe
+targetNodeGroupSelectors:
+  monitor.edgefarm.io/metrics: "default"

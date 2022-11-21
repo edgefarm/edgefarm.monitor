@@ -67,6 +67,5 @@ service:
   port: "8080"
   targetPort: "8080"
   portName: http
-targetNodeGroups:
-  - name: virtual-72836385
-  - name: virtual-89d577fe
+targetNodeGroupSelectors:
+  monitor.edgefarm.io/metrics: "default"
