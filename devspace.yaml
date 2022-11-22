@@ -1,61 +1,84 @@
 version: v2beta1
+name: edgefarm-network
 
 vars:
+  mimir_password_dir:
+    command: echo $HOME/.devspace/edgefarn.network/mimir_password/
+
+  mimir_user:
+    value: nats
+
   mimir_password:
-    command: date +%s | sha256sum | base64 | head -c 32 ; echo
+    command: |-
+      #!/bin/bash
+      set -e
+      echo $(cat ${mimir_password_dir}/password)
+
+functions:
+  init_mimir_password: |-
+    # usage init_mimir_password <DIR>
+    #!/usr/bin/env bash
+    set -e
+    set -u
+    if [ "$#" -ne 1 ]; then
+      echo "Illegal number of parameters"
+      echo "mimir_password_psk"
+      exit 1
+    fi
+    if ! [ -f "${1}/password" ]; then
+      echo "generating password in ${1}"
+      mkdir -p ${1}
+      date +%s | sha256sum | base64 | head -c 32 > ${1}/password
+    fi
 
 pipelines:
-  deploy-agent: |-
-    # install grafana agent
-    create_deployments monitoring-secret-for-grafana-agent
-    create_deployments grafana-agent
-    create_deployments monitoring-resources-for-nats
+  # deploy-node-exporter: |-
+  #   # deploy node exporter
+  #   create_deployments node-exporter
+  #   create_deployments service-monitor-for-node-exporter
 
-  deploy-nats: |-
-    # deploy nats
-    create_deployments nats
+  deploy-monitoring: |-
+    # generating password for mimir
+    init_mimir_password ${mimir_password_dir}
 
-  deploy-node-exporter: |-
-    # deploy node exporter
-    create_deployments node-exporter
-    create_deployments service-monitor-for-node-exporter
-
-  deploy-mimir-grafana: |-
-    # install grafana and mimir
+    # install all monitoring setup: grafana, grafana-operator and mimir
     create_deployments prometheus-crd
     create_deployments grafana
     create_deployments grafana-mimir
+    create_deployments grafana-agent-operator
 
-  deploy-monitoring: |-
-    # install all monitoring setup
-    run_pipelines deploy-mimir-grafana
-    run_pipelines deploy-edge-applications
+    # install main-nats monitoring
+    create_deployments main-nats-monitoring
 
-  deploy-edge-applications: |-
-    # install grafana-agent and node-exporter edge applicaitons
-    create_deployments edgeapplication-node-exporter
-    create_deployments edgeapplication-cadvisor
-    create_deployments edgeapplication-grafana-agent
+    # install edge grafana-agent, node-exporter and cadvisor
+    create_deployments edge-node-exporter
+    create_deployments edge-cadvisor
+    create_deployments edge-grafana-agent
 
 deployments:
-  kyverno-edge-monitoring-config:
-    kubectl:
-      manifests:
-        - dev/manifests/kyverno/add_nodegroup_to_edge_monitoring.yaml
-        - dev/manifests/kyverno/remove_nodegroup_from_edge_monitoring.yaml
-
   grafana-mimir:
     helm:
       chart:
         name: mimir-distributed
         repo: https://grafana.github.io/helm-charts
         version: "3.3.0"
-      valuesFiles:
-        - ./dev/charts/mimir/values.yaml
       values:
         nginx:
           basicAuth:
+            enabled: false
+            username: ${mimir_user}
             password: ${mimir_password}
+            htpasswd: >-
+              {{ htpasswd (required "'nginx.basicAuth.username' is required" .Values.nginx.basicAuth.username) (required "'nginx.basicAuth.password' is required" .Values.nginx.basicAuth.password) }}
+        metaMonitoring:
+          serviceMonitor:
+            enabled: true
+            namespace: monitoring
+          grafanaAgent:
+            metrics:
+              enabled: true
+              remote:
+                url: "http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push"
     namespace: monitoring
 
   grafana:
@@ -75,7 +98,7 @@ deployments:
                 url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
                 access: proxy
                 basicAuth: true
-                basicAuthUser: nats
+                basicAuthUser: ${mimir_user}
                 withCredentials: true
                 isDefault: true
                 editable: true
@@ -83,13 +106,13 @@ deployments:
                   basicAuthPassword: ${mimir_password}
     namespace: monitoring
 
-  edgeapplication-node-exporter:
+  edge-node-exporter:
     helm:
       chart:
         name: ./charts/node-exporter
-    namespace: nodegroup
+    namespace: edge-monitoring
 
-  edgeapplication-grafana-agent:
+  edge-grafana-agent:
     helm:
       chart:
         name: ./charts/grafana-agent/
@@ -99,15 +122,15 @@ deployments:
             config:
               remote_write:
                 basic_auth:
-                  username: nats
+                  username: ${mimir_user}
                   password: ${mimir_password}
-    namespace: nodegroup
+    namespace: edge-monitoring
 
-  edgeapplication-cadvisor:
+  edge-cadvisor:
     helm:
       chart:
         name: ./charts/cadvisor/
-    namespace: nodegroup
+    namespace: edge-monitoring
 
   prometheus-crd:
     kubectl:
@@ -122,50 +145,40 @@ deployments:
         - https://raw.githubusercontent.com/grafana/agent/main/production/operator/crds/monitoring.grafana.com_podlogs.yaml
     namespace: monitoring
 
-  nats:
-    helm:
-      chart:
-        name: nats
-        repo: https://nats-io.github.io/k8s/helm/charts/
-      valuesFiles:
-        - ./dev/charts/nats/values.yaml
-    namespace: nats
-
-  #old setup maybe we will need in future
-  grafana-agent:
+  grafana-agent-operator:
     helm:
       chart:
         name: grafana-agent-operator
         repo: https://grafana.github.io/helm-charts
-      valuesFiles:
-        - ./dev/charts/grafana-agent/values.yaml
+        version: "0.2.8"
+      values: {}
     namespace: monitoring
 
-  node-exporter:
+  main-nats-monitoring:
     helm:
       chart:
-        name: prometheus-node-exporter
-        repo: https://prometheus-community.github.io/helm-charts
-      valuesFiles:
-        - ./dev/charts/node-exporter/values.yaml
+        name: main-nats-monitoring
+        path: ./charts/main-nats-monitoring
+      values:
+        mimir:
+          user: ${mimir_user}
+          password: ${mimir_password}
+        agent:
+          image: grafana/agent:v0.28.0
     namespace: monitoring
 
-  monitoring-secret-for-grafana-agent:
-    kubectl:
-      manifests:
-        - ./dev/charts/grafana-agent/secret.yaml
-    namespace: monitoring
+  # Old setup we will need in future. Don't delete it yet
+  # node-exporter:
+  #   helm:
+  #     chart:
+  #       name: prometheus-node-exporter
+  #       repo: https://prometheus-community.github.io/helm-charts
+  #     valuesFiles:
+  #       - ./dev/charts/node-exporter/values.yaml
+  #   namespace: monitoring
 
-  monitoring-resources-for-nats:
-    kubectl:
-      manifests:
-        - ./dev/charts/grafana-agent/nats_metric_instance.yaml
-        - ./dev/charts/grafana-agent/rbac_grafana_agent.yaml
-        - ./dev/charts/grafana-agent/nats_grafana_agent.yaml
-    namespace: monitoring
-
-  service-monitor-for-node-exporter:
-    kubectl:
-      manifests:
-        - ./dev/charts/node-exporter/service-monitor.yaml
-    namespace: monitoring
+  # service-monitor-for-node-exporter:
+  #   kubectl:
+  #     manifests:
+  #       - ./dev/charts/node-exporter/service-monitor.yaml
+  #   namespace: monitoring

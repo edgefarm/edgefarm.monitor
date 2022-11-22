@@ -20,9 +20,11 @@ configmap:
     config:
       job:
         node_exporter:
-          targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
+          targets:
+            - "edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100"
         cadvisor:
-          targets: ["edgeapplication-cadvisor.nodegroup.svc:8080"]
+          targets:
+            - "edge-cadvisor.edge-monitoring.svc:8080"
       remote_write:
         url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
         basic_auth:

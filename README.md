@@ -6,15 +6,14 @@
 [stars-url]: https://github.com/edgefarm/edgefarm.monitor/stargazers
 [issues-shield]: https://img.shields.io/github/issues/edgefarm/edgefarm.monitor.svg?style=for-the-badge
 [issues-url]: https://github.com/edgefarm/edgefarm.monitor/issues
-[license-shield]: https://img.shields.io/github/license/edgefarm/semantic-release-helm-oci?logo=mit&style=for-the-badge
-[license-url]: https://opensource.org/licenses/MIT
-
+[license-shield]: https://img.shields.io/github/license/edgefarm/edgefarm.monitor?logo=mit&style=for-the-badge
+[license-url]: https://opensource.org/licenses/AGPL-3.0
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![AGPL 3.0 License][license-shield]][license-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -31,11 +30,11 @@
   <hr />
 </p>
 
-## About The Project
+# About The Project
 
 TODO
 
-### Features
+## Features
 
 - feature 1
 - feature 2
@@ -44,45 +43,45 @@ TODO
 
 <!-- GETTING STARTED -->
 
-## Getting Started
+# Getting Started
 
 Follow those simple steps, to install edgefarm.monitor in your cluster.
 
-### ✔️ Prerequisites
+## ✔️ Prerequisites
 
 TODO
 
-### 💡 [Do not skip] Mandatory step
+## 💡 [Do not skip] Mandatory step
 
 TODO, maybe eliiminate this section
 
-### 🎯 Installation
+## 🎯 Installation
 
 TODO
 
 It will take around 5 minutes to complete, ...
 
-## Usage
+# Usage
 
 TODO
 
-## Examples
+# Examples
 
 TODO
 
-## Debugging
+# Debugging
 
 TODO
 
-## Takedown
+# Takedown
 
 TODO
 
-## History
+# History
 
 TODO
 
-## Contributing
+# Contributing
 
 TODO
 
@@ -96,6 +95,6 @@ Code contributions are very much **welcome**.
 
 <!-- ACKNOWLEDGEMENTS -->
 
-## Acknowledgements
+# Acknowledgements
 
 TODO

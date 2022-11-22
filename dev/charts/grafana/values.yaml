@@ -50,13 +50,13 @@ dashboards:
       token: ""
     docker-containers-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/docker_containers.json
-      token: "" 
+      token: ""
     cadvisor-dashboard:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadvisor.json
-      token: "" 
+      token: ""
     cadvisor-custom:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadvisor_custom.json
-      token: "" 
+      token: ""
 
 #if you want persistend disk
 # persistence:

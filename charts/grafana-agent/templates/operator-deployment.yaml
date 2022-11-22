@@ -2,7 +2,7 @@ apiVersion: apps.kubeedge.io/v1alpha1
 kind: EdgeApplication
 metadata:
   name: grafana-agent
-  labels: 
+  labels:
     app.kubernetes.io/name: grafana-agent
   namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
@@ -58,7 +58,7 @@ spec:
                 {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- if or (and .Values.kubeletService.namespace .Values.kubeletService.serviceName) (.Values.extraArgs) }}
-                volumeMounts: 
+                volumeMounts:
                   - name: agent-yaml
                     mountPath: /etc/agent/
                 args:
@@ -79,7 +79,7 @@ spec:
               {{- with .Values.tolerations }}
               volumes:
                 - name: agent-yaml
-                  configMap: 
+                  configMap:
                     name: grafana-agent-yml
               tolerations:
               {{- toYaml . | nindent 16 }}

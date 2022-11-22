@@ -1,9 +1,0 @@
-exporter:
-  enabled: true
-  image: natsio/prometheus-nats-exporter:latest
-  pullPolicy: IfNotPresent
-  serviceMonitor:
-    enabled: true
-nats:
-  jetstream:
-    enabled: true
