@@ -12,24 +12,22 @@ podLabels: {}
 podSecurityContext: {}
 # -- Container security context (allowPrivilegeEscalation, etc.)
 containerSecurityContext: {}
+monitoring: default
 configmap:
   agent_yaml:
     global:
       remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
     config:
       job:
-        grafana_agent:
-          targets:
-            [
-              "edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100",
-            ]
+        node_exporter:
+          targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
         cadvisor:
           targets: ["edgeapplication-cadvisor.nodegroup.svc:8080"]
       remote_write:
         url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
         basic_auth:
           username: nats
-          password: YzFiYTgzNmNiYWE0ODM4NGI1MjY5ZjAw
+          password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
@@ -80,4 +78,5 @@ affinity:
         - matchExpressions:
             - key: node-role.kubernetes.io/edge
               operator: Exists
-targetNodeGroups: []
+targetNodeGroupSelectors:
+  monitor.edgefarm.io/metrics: "default"

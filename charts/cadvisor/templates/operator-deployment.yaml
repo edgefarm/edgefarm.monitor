@@ -142,7 +142,8 @@ spec:
           selector:
 {{ include "cadvisor.selectorLabels" . | indent 11 }}
   workloadScope:
-    targetNodeGroups:
-      {{- with .Values.targetNodeGroups }}
-      {{- toYaml . | nindent 6 }}
-      {{- end }}
+    targetNodeGroupSelectors:
+      - matchLabels:
+        {{- with .Values.targetNodeGroupSelectors }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}

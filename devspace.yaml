@@ -33,7 +33,6 @@ pipelines:
 
   deploy-edge-applications: |-
     # install grafana-agent and node-exporter edge applicaitons
-    bash node_names.sh
     create_deployments edgeapplication-node-exporter
     create_deployments edgeapplication-cadvisor
     create_deployments edgeapplication-grafana-agent
@@ -50,6 +49,7 @@ deployments:
       chart:
         name: mimir-distributed
         repo: https://grafana.github.io/helm-charts
+        version: "3.3.0"
       valuesFiles:
         - ./dev/charts/mimir/values.yaml
       values:
@@ -62,6 +62,7 @@ deployments:
     helm:
       chart:
         name: grafana
+        version: "6.44.0"
         repo: https://grafana.github.io/helm-charts
       valuesFiles:
         - ./dev/charts/grafana/values.yaml
