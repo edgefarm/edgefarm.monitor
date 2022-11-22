@@ -23,6 +23,16 @@ datasources:
         editable: true
         secureJsonData:
           basicAuthPassword: test
+      - name: Loki
+        type: loki
+        isDefault: false
+        url: http://loki-gateway.monitoring.svc:3100
+        editable: true
+        basicAuth: true
+        basicAuthUser: loki
+        withCredentials: true
+        secureJsonData:
+          basicAuthPassword: test
 
 dashboardProviders:
   dashboardproviders.yaml:
