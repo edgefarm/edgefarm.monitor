@@ -1,0 +1,15 @@
+apiVersion: v2
+appVersion: 0.1.0
+description: A Helm chart for main-nats-monitoring components
+maintainers:
+  - email: armin.schlegel@gmx.de
+    name: siredmar
+name: main-nats-monitoring
+sources:
+  - https://github.com/prometheus/node_exporter/
+type: application
+version: 0.1.0
+# dependencies:
+#   - name: grafana-agent-operator
+#     repository: https://grafana.github.io/helm-charts
+#     version: 0.2.8
