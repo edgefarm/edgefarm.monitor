@@ -26,7 +26,7 @@ data:
               - source_labels: [__address__]
                 target_label: instance
                 replacement: ${NODE_NAME}
-              {{- if eq .Values.monitoring "partial" }}
+              {{- if eq .Values.monitoring "default" }}
               metric_relabel_configs:
               - source_labels: [__name__]
                 regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|(.*disk.*)|(.*filesystem.*)|(.*sockstat.*)|node_uname_info'
@@ -39,7 +39,7 @@ data:
               - source_labels: [__address__]
                 target_label: instance
                 replacement: ${NODE_NAME}
-              {{- if eq .Values.monitoring "partial" }}
+              {{- if eq .Values.monitoring "default" }}
               metric_relabel_configs:
               - source_labels: [__name__]
                 regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|container_last_seen'

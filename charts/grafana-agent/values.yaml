@@ -12,7 +12,7 @@ podLabels: {}
 podSecurityContext: {}
 # -- Container security context (allowPrivilegeEscalation, etc.)
 containerSecurityContext: {}
-monitoring: partial
+monitoring: default
 configmap:
   agent_yaml:
     global:
