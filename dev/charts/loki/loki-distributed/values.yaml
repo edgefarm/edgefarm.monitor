@@ -98,7 +98,7 @@ loki:
             store: memberlist
           replication_factor: 1
       chunk_idle_period: 30m
-      chunk_block_size: 262144
+      chunk_block_size: 256
       chunk_encoding: snappy
       chunk_retain_period: 1m
       max_transfer_retries: 0
@@ -187,7 +187,7 @@ loki:
       tail_proxy_url: http://{{ include "loki.querierFullname" . }}:3100
 
     compactor:
-      shared_store: filesystem
+      shared_store: s3
 
     ruler:
       storage:
@@ -214,13 +214,13 @@ loki:
 
   schemaConfig:
     configs:
-    - from: 2020-09-07
-      store: boltdb-shipper
-      object_store: aws
-      schema: v11
-      index:
-        prefix: loki_index_
-        period: 24h
+      - from: 2020-07-01
+        store: boltdb-shipper
+        object_store: aws
+        schema: v11
+        index:
+          prefix: loki_index_
+          period: 24h
 
 
 
@@ -247,7 +247,7 @@ loki:
       cache_location: /var/loki/cache
       cache_ttl: 24h
     aws:
-      s3: http://grafana-mimir:supersecret@grafana-mimir-minio.monitoring.svc:9000/loki
+      s3: http://grafana-mimir:supersecret@grafana-mimir-minio.monitoring.svc:9000
       bucketnames: loki
       insecure: true
       s3forcepathstyle: true
@@ -334,7 +334,7 @@ ingester:
   # -- Kind of deployment [StatefulSet/Deployment]
   kind: StatefulSet
   # -- Number of replicas for the ingester
-  replicas: 1
+  replicas: 2
   autoscaling:
     # -- Enable autoscaling for the ingester
     enabled: false
@@ -420,7 +420,7 @@ ingester:
   livenessProbe: {}
   persistence:
     # -- Enable creating PVCs which is required when using boltdb-shipper
-    enabled: false
+    enabled: true
     # -- Use emptyDir with ramdisk for storage. **Please note that all data in ingester will be lost on pod restart**
     inMemory: false
     # -- Size of persistent or memory disk
@@ -439,7 +439,7 @@ ingester:
 # Configuration for the distributor
 distributor:
   # -- Number of replicas for the distributor
-  replicas: 1
+  replicas: 2
   autoscaling:
     # -- Enable autoscaling for the distributor
     enabled: false
@@ -514,7 +514,7 @@ distributor:
 # Configuration for the querier
 querier:
   # -- Number of replicas for the querier
-  replicas: 1
+  replicas: 2
   autoscaling:
     # -- Enable autoscaling for the querier, this is only used if `indexGateway.enabled: true`
     enabled: false
@@ -737,7 +737,7 @@ queryScheduler:
 # Configuration for the table-manager
 tableManager:
   # -- Specifies whether the table-manager should be enabled
-  enabled: false
+  enabled: true
   image:
     # -- The Docker registry for the table-manager image. Overrides `loki.image.registry`
     registry: null
@@ -961,11 +961,11 @@ gateway:
   # Basic auth configuration
   basicAuth:
     # -- Enables basic authentication for the gateway
-    enabled: false
+    enabled: true
     # -- The basic auth username for the gateway
-    username: null
+    username: loki
     # -- The basic auth password for the gateway
-    password: null
+    password: test
     # -- Uses the specified username and password to compute a htpasswd using Sprig's `htpasswd` function.
     # The value is templated using `tpl`. Override this to use a custom htpasswd, e.g. in case the default causes
     # high CPU load.
@@ -1122,7 +1122,7 @@ gateway:
 # Configuration for the compactor
 compactor:
   # -- Specifies whether compactor should be enabled
-  enabled: false
+  enabled: true
   image:
     # -- The Docker registry for the compactor image. Overrides `loki.image.registry`
     registry: null
@@ -1396,7 +1396,7 @@ indexGateway:
   tolerations: []
   persistence:
     # -- Enable creating PVCs which is required when using boltdb-shipper
-    enabled: false
+    enabled: true
     # -- Use emptyDir with ramdisk for storage. **Please note that all data in indexGateway will be lost on pod restart**
     inMemory: false
     # -- Size of persistent or memory disk
