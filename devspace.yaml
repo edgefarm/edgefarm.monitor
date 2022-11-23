@@ -3,7 +3,7 @@ name: edgefarm-network
 
 vars:
   mimir_password_dir:
-    command: echo $HOME/.devspace/edgefarn.network/mimir_password/
+    command: echo $HOME/.devspace/edgefarn.monitor/mimir_password/
 
   mimir_user:
     value: nats
