@@ -32,15 +32,16 @@ functions:
     fi
 
 pipelines:
+  init: |-
+    # generating password for mimir
+    init_mimir_password ${mimir_password_dir}
+
   # deploy-node-exporter: |-
   #   # deploy node exporter
   #   create_deployments node-exporter
   #   create_deployments service-monitor-for-node-exporter
 
   deploy-monitoring: |-
-    # generating password for mimir
-    init_mimir_password ${mimir_password_dir}
-
     # install all monitoring setup: grafana, grafana-operator and mimir
     create_deployments prometheus-crd
     create_deployments grafana
