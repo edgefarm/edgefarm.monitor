@@ -9,7 +9,3 @@ sources:
   - https://github.com/prometheus/node_exporter/
 type: application
 version: 0.1.0
-# dependencies:
-#   - name: grafana-agent-operator
-#     repository: https://grafana.github.io/helm-charts
-#     version: 0.2.8
