@@ -25,6 +25,9 @@ configmap:
         cadvisor:
           targets:
             - "edge-cadvisor.edge-monitoring.svc:8080"
+        leaf_nats:
+          targets:
+            - "leaf-nats.nats.svc:7777"
       remote_write:
         url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
         basic_auth:
