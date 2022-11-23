@@ -14,5 +14,4 @@ metaMonitoring:
     metrics:
       enabled: true
       remote:
-        url: 'http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push'
-
+        url: "http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push"

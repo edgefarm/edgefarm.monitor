@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "ga-operator.name" -}}
+{{- define "main-nats-monitoring.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "ga-operator.fullname" -}}
+{{- define "main-nats-monitoring.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,18 +26,18 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "ga-operator.chart" -}}
+{{- define "main-nats-monitoring.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "ga-operator.labels" -}}
-{{ include "ga-operator.selectorLabels" . }}
+{{- define "main-nats-monitoring.labels" -}}
+{{ include "main-nats-monitoring.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/component: operator
-helm.sh/chart: {{ include "ga-operator.chart" . }}
+helm.sh/chart: {{ include "main-nats-monitoring.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -49,17 +49,17 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{/*
 Selector labels
 */}}
-{{- define "ga-operator.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "ga-operator.name" . }}
+{{- define "main-nats-monitoring.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "main-nats-monitoring.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "ga-operator.serviceAccountName" -}}
+{{- define "main-nats-monitoring.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "ga-operator.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "main-nats-monitoring.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

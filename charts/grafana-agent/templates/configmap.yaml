@@ -45,6 +45,13 @@ data:
                 regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|container_last_seen'
                 action: keep
               {{- end }}
+            - job_name: leaf-nats
+              static_configs:
+                - targets: {{ .Values.configmap.agent_yaml.config.job.leaf_nats.targets }}
+              relabel_configs:
+              - source_labels: [__address__]
+                target_label: instance
+                replacement: ${NODE_NAME}
           remote_write:
             - url: {{ .Values.configmap.agent_yaml.config.remote_write.url }}
               basic_auth:

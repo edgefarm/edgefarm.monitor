@@ -46,18 +46,17 @@ dashboards:
       url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
       token: ""
     node-exporter-custom-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/node_exporter_custom.json
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter_custom.json
       token: ""
     docker-containers-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/docker_containers.json
-      token: "" 
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/docker_containers.json
+      token: ""
     cadvisor-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadvisor.json
-      token: "" 
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/cadvisor.json
+      token: ""
     cadvisor-custom:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/feature_add_cadviser_dashboard/dashboards/cadvisor_custom.json
-      token: "" 
-
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/cadvisor_custom.json
+      token: ""
 #if you want persistend disk
 # persistence:
 #   type: pvc
