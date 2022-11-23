@@ -43,7 +43,7 @@ configmap:
             job:
               system:
                 targets: localhost
-
+                
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true

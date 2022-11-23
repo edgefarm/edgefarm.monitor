@@ -1,19 +1,17 @@
 apiVersion: monitoring.grafana.com/v1alpha1
 kind: GrafanaAgent
 metadata:
-  name: grafana-agent
-  namespace: monitoring
-  labels:
-    app.kubernetes.io/instance: grafana-agent
+  name: {{ include "main-nats-monitoring.fullname" . }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
   image: grafana/agent:v0.28.0
   logLevel: info
-  serviceAccountName: grafana-agent
+  serviceAccountName: {{ include "main-nats-monitoring.name" . }}
   metrics:
     instanceSelector:
       matchLabels:
         app.kubernetes.io/component: meta-monitoring
-        app.kubernetes.io/instance: grafana-mimir
+        app.kubernetes.io/instance: {{ include "main-nats-monitoring.name" . }}
         app.kubernetes.io/name: mimir
     externalLabels:
       cluster: cloud
