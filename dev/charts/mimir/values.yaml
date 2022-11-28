@@ -16,3 +16,25 @@ metaMonitoring:
       remote:
         url: 'http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push'
 
+minio:
+  rootUser: grafana-mimir
+  rootPassword: supersecret
+  buckets:
+    - name: mimir-tsdb
+      policy: none
+      purge: false
+    - name: mimir-ruler
+      policy: none
+      purge: false
+    - name: enterprise-metrics-tsdb
+      policy: none
+      purge: false
+    - name: enterprise-metrics-admin
+      policy: none
+      purge: false
+    - name: enterprise-metrics-ruler
+      policy: none
+      purge: false
+    - name: loki
+      policy: none
+      purge: false

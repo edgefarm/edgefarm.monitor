@@ -187,7 +187,7 @@ loki:
       tail_proxy_url: http://{{ include "loki.querierFullname" . }}:3100
 
     compactor:
-      shared_store: filesystem
+      shared_store: s3
 
     ruler:
       storage:
@@ -201,44 +201,15 @@ loki:
       alertmanager_url: https://alertmanager.xx
       external_url: https://alertmanager.xx
 
-  # -- Check https://grafana.com/docs/loki/latest/configuration/#schema_config for more info on how to configure schemas
-  # schemaConfig:
-  #   configs:
-  #   - from: 2020-09-07
-  #     store: boltdb-shipper
-  #     object_store: filesystem
-  #     schema: v11
-  #     index:
-  #       prefix: loki_index_
-  #       period: 24h
-
   schemaConfig:
     configs:
-    - from: 2020-09-07
-      store: boltdb-shipper
-      object_store: aws
-      schema: v11
-      index:
-        prefix: loki_index_
-        period: 24h
-
-
-
-
-  # -- Check https://grafana.com/docs/loki/latest/configuration/#storage_config for more info on how to configure storages
-  # storageConfig:
-  #   boltdb_shipper:
-  #     shared_store: filesystem
-  #     active_index_directory: /var/loki/index
-  #     cache_location: /var/loki/cache
-  #     cache_ttl: 168h
-  #   filesystem:
-  #     directory: /var/loki/chunks
-# -- Uncomment to configure each storage individually
-#   azure: {}
-#   gcs: {}
-#   s3: {}
-#   boltdb: {}
+      - from: 2020-07-01
+        store: boltdb-shipper
+        object_store: aws
+        schema: v11
+        index:
+          prefix: loki_index_
+          period: 24h
 
   storageConfig:
     boltdb_shipper:
@@ -247,7 +218,7 @@ loki:
       cache_location: /var/loki/cache
       cache_ttl: 24h
     aws:
-      s3: http://grafana-mimir:supersecret@grafana-mimir-minio.monitoring.svc:9000/loki
+      s3: http://${monitoring_user}:${monitoring_password}@grafana-mimir-minio.monitoring.svc:9000
       bucketnames: loki
       insecure: true
       s3forcepathstyle: true
@@ -420,7 +391,7 @@ ingester:
   livenessProbe: {}
   persistence:
     # -- Enable creating PVCs which is required when using boltdb-shipper
-    enabled: false
+    enabled: true
     # -- Use emptyDir with ramdisk for storage. **Please note that all data in ingester will be lost on pod restart**
     inMemory: false
     # -- Size of persistent or memory disk
@@ -514,7 +485,7 @@ distributor:
 # Configuration for the querier
 querier:
   # -- Number of replicas for the querier
-  replicas: 1
+  replicas: 2
   autoscaling:
     # -- Enable autoscaling for the querier, this is only used if `indexGateway.enabled: true`
     enabled: false
@@ -737,7 +708,7 @@ queryScheduler:
 # Configuration for the table-manager
 tableManager:
   # -- Specifies whether the table-manager should be enabled
-  enabled: false
+  enabled: true
   image:
     # -- The Docker registry for the table-manager image. Overrides `loki.image.registry`
     registry: null
@@ -961,11 +932,11 @@ gateway:
   # Basic auth configuration
   basicAuth:
     # -- Enables basic authentication for the gateway
-    enabled: false
+    enabled: true
     # -- The basic auth username for the gateway
-    username: null
+    username: loki
     # -- The basic auth password for the gateway
-    password: null
+    password: test
     # -- Uses the specified username and password to compute a htpasswd using Sprig's `htpasswd` function.
     # The value is templated using `tpl`. Override this to use a custom htpasswd, e.g. in case the default causes
     # high CPU load.
@@ -1122,7 +1093,7 @@ gateway:
 # Configuration for the compactor
 compactor:
   # -- Specifies whether compactor should be enabled
-  enabled: false
+  enabled: true
   image:
     # -- The Docker registry for the compactor image. Overrides `loki.image.registry`
     registry: null
@@ -1396,7 +1367,7 @@ indexGateway:
   tolerations: []
   persistence:
     # -- Enable creating PVCs which is required when using boltdb-shipper
-    enabled: false
+    enabled: true
     # -- Use emptyDir with ramdisk for storage. **Please note that all data in indexGateway will be lost on pod restart**
     inMemory: false
     # -- Size of persistent or memory disk

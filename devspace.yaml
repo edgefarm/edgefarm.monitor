@@ -1,10 +1,38 @@
 version: v2beta1
 
 vars:
-  mimir_password:
-    command: date +%s | sha256sum | base64 | head -c 32 ; echo
+  mimir_password_dir:
+    command: echo $HOME/.devspace/edgefarn.monitor/mimir_password/
+  monitoring_password:
+    command: |-
+      #!/bin/bash
+      set -e
+      echo $(cat ${mimir_password_dir}/password)
+  monitoring_user:
+    value: edgefarm-monitor
+
+functions:
+  init_mimir_password: |-
+    # usage init_mimir_password <DIR>
+    #!/usr/bin/env bash
+    set -e
+    set -u
+    if [ "$#" -ne 1 ]; then
+      echo "Illegal number of parameters"
+      echo "mimir_password_psk"
+      exit 1
+    fi
+    if ! [ -f "${1}/password" ]; then
+      echo "generating password in ${1}"
+      mkdir -p ${1}
+      date +%s | sha256sum | base64 | head -c 32 > ${1}/password
+    fi
 
 pipelines:
+  init: |-
+    # generating password for mimir
+    init_mimir_password ${mimir_password_dir}
+
   deploy-agent: |-
     # install grafana agent
     create_deployments monitoring-secret-for-grafana-agent
@@ -30,10 +58,13 @@ pipelines:
     # install all monitoring setup
     run_pipelines deploy-mimir-grafana
     run_pipelines deploy-edge-applications
+    run_pipelines deploy-logs
 
-  deploy-loki: |-
-    # create_deployments loki
+  deploy-logs: |-
+    # install loging components
     create_deployments promtail
+    helm install loki-loki-distributed --namespace loki ./dev/charts/loki-distributed --set loki.storageConfig.aws.s3=http://${monitoring_user}:${monitoring_password}@grafana-mimir-minio.monitoring.svc:9000 --set gateway.basicAuth.username=${monitoring_user} --set gateway.basicAuth.password=${monitoring_password}
+    
 
   deploy-edge-applications: |-
     # install grafana-agent and node-exporter edge applicaitons
@@ -59,7 +90,11 @@ deployments:
       values:
         nginx:
           basicAuth:
-            password: ${mimir_password}
+            username: ${monitoring_user}
+            password: ${monitoring_password}
+        minio:
+          rootUser: ${monitoring_user}
+          rootPassword: ${monitoring_password}
     namespace: monitoring
 
   grafana:
@@ -79,22 +114,22 @@ deployments:
                 url: http://grafana-mimir-nginx.monitoring.svc:80/prometheus
                 access: proxy
                 basicAuth: true
-                basicAuthUser: nats
+                basicAuthUser: ${monitoring_user}
                 withCredentials: true
                 isDefault: true
                 editable: true
                 secureJsonData:
-                  basicAuthPassword: ${mimir_password}
+                  basicAuthPassword: ${monitoring_password}
               - name: Loki
                 type: loki
                 isDefault: false
                 url: http://loki-loki-distributed-gateway.loki.svc
                 editable: true
                 basicAuth: true
-                basicAuthUser: loki
+                basicAuthUser: ${monitoring_user}
                 withCredentials: true
                 secureJsonData:
-                  basicAuthPassword: test
+                  basicAuthPassword: ${monitoring_password}
     namespace: monitoring
 
   loki:
@@ -113,8 +148,15 @@ deployments:
         name: promtail
         repo: https://grafana.github.io/helm-charts
         version: "6.6.2"
-      valuesFiles:
-        - ./dev/charts/promtail/values.yaml
+      # valuesFiles:
+      #   - ./dev/charts/promtail/values.yaml
+      values:
+        config:
+          clients:
+            - url: http://loki-loki-distributed-gateway.loki.svc/loki/api/v1/push
+              basic_auth:
+                username: ${monitoring_user}
+                password: ${monitoring_password}
     namespace: loki
 
   edgeapplication-node-exporter:
@@ -133,8 +175,8 @@ deployments:
             config:
               remote_write:
                 basic_auth:
-                  username: nats
-                  password: ${mimir_password}
+                  username: ${monitoring_user}
+                  password: ${monitoring_password}
     namespace: nodegroup
 
   edgeapplication-cadvisor:
