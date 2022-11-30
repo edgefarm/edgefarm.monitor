@@ -17,17 +17,33 @@ configmap:
   agent_yaml:
     global:
       remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-    config:
-      job:
-        node_exporter:
-          targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
-        cadvisor:
-          targets: ["edgeapplication-cadvisor.nodegroup.svc:8080"]
-      remote_write:
-        url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-        basic_auth:
-          username: nats
-          password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+    metrics: 
+      configs:
+        edgenodes_exporter:
+          scrape_configs:
+            job:
+              node_exporter:
+                targets: ["edgeapplication-node-exporter-prometheus-node-exporter.nodegroup.svc:9100"]
+              cadvisor:
+                targets: ["edgeapplication-cadvisor.nodegroup.svc:8080"]
+          remote_write:
+            url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+            basic_auth:
+              username: test
+              password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+    logs: 
+      configs:
+        default:
+          clients:
+            url: http://loki-loki-distributed-gateway.loki.svc/loki/api/v1/push
+            basic_auth:
+              username: test
+              password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+          scrape_configs:
+            job:
+              system:
+                targets: localhost
+
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
@@ -60,6 +76,7 @@ extraArgs:
   - -enable-features=integrations-next
   - -config.file=/etc/agent/agent.yaml
   - -config.expand-env
+  # - -metrics.service.config-store.etcd.endpoints=http://kubernetes.default.svc
 # -- Resource limits and requests config
 resources: {}
 # -- nodeSelector configuration

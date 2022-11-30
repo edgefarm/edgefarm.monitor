@@ -172,11 +172,20 @@ deployments:
       values:
         configmap:
           agent_yaml:
-            config:
-              remote_write:
-                basic_auth:
-                  username: ${monitoring_user}
-                  password: ${monitoring_password}
+            metrics:
+              configs:
+                edgenodes_exporter:
+                  remote_write:
+                    basic_auth:
+                      username: ${monitoring_user}
+                      password: ${monitoring_password}
+            logs:
+              configs:
+                default:
+                  clients:
+                    basic_auth:
+                      username: ${monitoring_user}
+                      password: ${monitoring_password}
     namespace: nodegroup
 
   edgeapplication-cadvisor:
