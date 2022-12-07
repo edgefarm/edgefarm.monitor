@@ -28,6 +28,23 @@ functions:
       date +%s | sha256sum | base64 | head -c 32 > ${1}/password
     fi
 
+
+commands:
+  help: |-
+    #!/bin/bash
+    set -e
+    GREEN='\033[0;32m'
+    BRED='\033[3;31m'
+    BGREEN='\033[1;32m'
+    GREY='\033[0;36m'
+    BOLD='\033[1m'
+    NC='\033[0m' # No Color
+    echo -e "${BGREEN}Usage of ${BRED}edgefarm.monitoring:${NC}"
+    echo -e "${GREEN} General monitoring commands:${NC}"
+    echo -e "${BOLD}  devspace run init                                 ${GREY}Create password for monitoring and store it locally${NC}"
+    echo -e "${BOLD}  devspace run deploy-monitoring                    ${GREY}Creates full setup of monitoring${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-monitoring            ${GREY}Remove monitoring setup${NC}"
+
 pipelines:
   init: |-
     # generating password for mimir
@@ -71,6 +88,14 @@ pipelines:
     create_deployments edgeapplication-node-exporter
     create_deployments edgeapplication-cadvisor
     create_deployments edgeapplication-grafana-agent
+
+  purge-monitoring: |-
+    purge_deployments edgeapplication-node-exporter edgeapplication-cadvisor edgeapplication-grafana-agent
+    purge_deployments grafana-mimir grafana prometheus-crd
+    purge_deployments promtail loki-loki-distributed
+    helm uninstall loki-loki-distributed -n loki
+    kubectl delete pvc -n monitoring --all
+    kubectl delete pvc -n loki --all
 
 deployments:
   kyverno-edge-monitoring-config:
@@ -132,24 +157,12 @@ deployments:
                   basicAuthPassword: ${monitoring_password}
     namespace: monitoring
 
-  loki:
-    helm:
-      chart:
-        name: dev/charts/loki/loki-distributed/
-        # repo: https://grafana.github.io/helm-charts
-        # version: "0.65.3"
-      # valuesFiles:
-      #   - ./dev/charts/loki/values.yaml
-    namespace: loki
-
   promtail:
     helm:
       chart:
         name: promtail
         repo: https://grafana.github.io/helm-charts
         version: "6.6.2"
-      # valuesFiles:
-      #   - ./dev/charts/promtail/values.yaml
       values:
         config:
           clients:
