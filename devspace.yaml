@@ -41,9 +41,9 @@ commands:
     NC='\033[0m' # No Color
     echo -e "${BGREEN}Usage of ${BRED}edgefarm.monitoring:${NC}"
     echo -e "${GREEN} General monitoring commands:${NC}"
-    echo -e "${BOLD}  devspace run init                                 ${GREY}Create password for monitoring and store it locally${NC}"
-    echo -e "${BOLD}  devspace run deploy-monitoring                    ${GREY}Creates full setup of monitoring${NC}"
-    echo -e "${BOLD}  devspace run-pipeline purge-monitoring            ${GREY}Remove monitoring setup${NC}"
+    echo -e "${BOLD}  devspace run-pipeline init                        # ${GREY}Create password for monitoring and store it locally${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-monitoring           # ${GREY}Creates full setup of monitoring${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-monitoring            # ${GREY}Remove monitoring setup${NC}"
 
 pipelines:
   init: |-
@@ -54,7 +54,7 @@ pipelines:
   #   # deploy node exporter
   #   create_deployments node-exporter
   #   create_deployments service-monitor-for-node-exporter
-  
+
   deploy-logs: |-
     # install loging components
     create_deployments promtail
@@ -74,7 +74,7 @@ pipelines:
     create_deployments edge-node-exporter
     create_deployments edge-cadvisor
     create_deployments edge-grafana-agent
-    
+
     # install logging services
     run_pipelines deploy-logs
 
