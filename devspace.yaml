@@ -2,27 +2,25 @@ version: v2beta1
 name: edgefarm-network
 
 vars:
-  mimir_password_dir:
-    command: echo $HOME/.devspace/edgefarn.monitor/mimir_password/
-
-  mimir_user:
-    value: nats
-
-  mimir_password:
+  monitoring_password_dir:
+    command: echo $HOME/.devspace/edgefarn.monitor/monitoring_password/
+  monitoring_password:
     command: |-
       #!/bin/bash
       set -e
-      echo $(cat ${mimir_password_dir}/password)
+      echo $(cat ${monitoring_password_dir}/password)
+  monitoring_user:
+    value: edgefarm-monitor
 
 functions:
-  init_mimir_password: |-
-    # usage init_mimir_password <DIR>
+  init_monitoring_password: |-
+    # usage init_monitoring_password <DIR>
     #!/usr/bin/env bash
     set -e
     set -u
     if [ "$#" -ne 1 ]; then
       echo "Illegal number of parameters"
-      echo "mimir_password_psk"
+      echo "monitoring_password_psk"
       exit 1
     fi
     if ! [ -f "${1}/password" ]; then
@@ -33,8 +31,8 @@ functions:
 
 pipelines:
   init: |-
-    # generating password for mimir
-    init_mimir_password ${mimir_password_dir}
+    # generating password for monitoring
+    init_monitoring_password ${monitoring_password_dir}
 
   # deploy-node-exporter: |-
   #   # deploy node exporter
@@ -120,11 +118,20 @@ deployments:
       values:
         configmap:
           agent_yaml:
-            config:
-              remote_write:
-                basic_auth:
-                  username: ${mimir_user}
-                  password: ${mimir_password}
+            metrics:
+              configs:
+                edgenodes_exporter:
+                  remote_write:
+                    basic_auth:
+                      username: ${monitoring_user}
+                      password: ${monitoring_password}
+            logs:
+              configs:
+                default:
+                  clients:
+                    basic_auth:
+                      username: ${monitoring_user}
+                      password: ${monitoring_password}
     namespace: edge-monitoring
 
   edge-cadvisor:
@@ -162,8 +169,8 @@ deployments:
         path: ./charts/main-nats-monitoring
       values:
         mimir:
-          user: ${mimir_user}
-          password: ${mimir_password}
+          user: ${monitoring_user}
+          password: ${monitoring_password}
         agent:
           image: grafana/agent:v0.28.0
     namespace: monitoring

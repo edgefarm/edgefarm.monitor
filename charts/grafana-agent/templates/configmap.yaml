@@ -47,7 +47,7 @@ data:
               {{- end }}
             - job_name: leaf-nats
               static_configs:
-                - targets: {{ .Values.configmap.agent_yaml.config.job.leaf_nats.targets }}
+                - targets: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.scrape_configs.job.leaf_nats.targets }}
               relabel_configs:
               - source_labels: [__address__]
                 target_label: instance

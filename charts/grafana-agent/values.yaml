@@ -17,22 +17,37 @@ configmap:
   agent_yaml:
     global:
       remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-    config:
-      job:
-        node_exporter:
-          targets:
-            - "edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100"
-        cadvisor:
-          targets:
-            - "edge-cadvisor.edge-monitoring.svc:8080"
-        leaf_nats:
-          targets:
-            - "leaf-nats.nats.svc:7777"
-      remote_write:
-        url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-        basic_auth:
-          username: nats
-          password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+    metrics:
+      configs:
+        edgenodes_exporter:
+          scrape_configs:
+            job:
+              node_exporter:
+                targets: ["edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100"]
+              cadvisor:
+                targets: ["edge-cadvisor.edge-monitoring.svc:8080"]
+              leaf_nats:
+                targets:
+                  - "leaf-nats.nats.svc:7777"
+          remote_write:
+            url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+            basic_auth:
+              username: test
+              password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+
+    logs:
+      configs:
+        default:
+          clients:
+            url: http://loki-loki-distributed-gateway.loki.svc/loki/api/v1/push
+            basic_auth:
+              username: test
+              password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+          scrape_configs:
+            job:
+              system:
+                targets: localhost
+
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
   create: true
