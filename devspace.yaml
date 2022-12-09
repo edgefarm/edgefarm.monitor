@@ -29,6 +29,22 @@ functions:
       date +%s | sha256sum | base64 | head -c 32 > ${1}/password
     fi
 
+commands:
+  help: |-
+    #!/bin/bash
+    set -e
+    GREEN='\033[0;32m'
+    BRED='\033[3;31m'
+    BGREEN='\033[1;32m'
+    GREY='\033[0;36m'
+    BOLD='\033[1m'
+    NC='\033[0m' # No Color
+    echo -e "${BGREEN}Usage of ${BRED}edgefarm.monitoring:${NC}"
+    echo -e "${GREEN} General monitoring commands:${NC}"
+    echo -e "${BOLD}  devspace run-pipeline init                        # ${GREY}Create password for monitoring and store it locally${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-monitoring           # ${GREY}Creates full setup of monitoring${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-monitoring            # ${GREY}Remove monitoring setup${NC}"
+
 pipelines:
   init: |-
     # generating password for monitoring
@@ -38,6 +54,11 @@ pipelines:
   #   # deploy node exporter
   #   create_deployments node-exporter
   #   create_deployments service-monitor-for-node-exporter
+
+  deploy-logs: |-
+    # install loging components
+    create_deployments promtail
+    helm install loki-loki-distributed --namespace loki ./dev/charts/loki-distributed --set loki.storageConfig.aws.s3=http://${monitoring_user}:${monitoring_password}@grafana-mimir-minio.monitoring.svc:9000 --set gateway.basicAuth.username=${monitoring_user} --set gateway.basicAuth.password=${monitoring_password}
 
   deploy-monitoring: |-
     # install all monitoring setup: grafana, grafana-operator and mimir
@@ -53,6 +74,9 @@ pipelines:
     create_deployments edge-node-exporter
     create_deployments edge-cadvisor
     create_deployments edge-grafana-agent
+
+    # install logging services
+    run_pipelines deploy-logs
 
   purge-monitoring: |-
     purge_deployments edge-node-exporter edge-cadvisor edge-grafana-agent main-nats-monitoring
