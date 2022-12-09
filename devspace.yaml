@@ -54,6 +54,14 @@ pipelines:
     create_deployments edge-cadvisor
     create_deployments edge-grafana-agent
 
+  purge-monitoring: |-
+    purge_deployments edge-node-exporter edge-cadvisor edge-grafana-agent main-nats-monitoring
+    purge_deployments grafana-mimir grafana prometheus-crd grafana-agent-operator
+    purge_deployments promtail
+    helm uninstall loki-loki-distributed -n loki
+    kubectl delete pvc -n monitoring --all
+    kubectl delete pvc -n loki --all
+
 deployments:
   grafana-mimir:
     helm:
