@@ -135,6 +135,16 @@ deployments:
                 editable: true
                 secureJsonData:
                   basicAuthPassword: ${mimir_password}
+              - name: Loki
+                type: loki
+                isDefault: false
+                url: http://loki-loki-distributed-gateway.loki.svc
+                editable: true
+                basicAuth: true
+                basicAuthUser: ${monitoring_user}
+                withCredentials: true
+                secureJsonData:
+                  basicAuthPassword: ${monitoring_password}
     namespace: monitoring
 
   edge-node-exporter:
@@ -171,6 +181,21 @@ deployments:
       chart:
         name: ./charts/cadvisor/
     namespace: edge-monitoring
+
+  promtail:
+    helm:
+      chart:
+        name: promtail
+        repo: https://grafana.github.io/helm-charts
+        version: "6.6.2"
+      values:
+        config:
+          clients:
+            - url: http://loki-loki-distributed-gateway.loki.svc/loki/api/v1/push
+              basic_auth:
+                username: ${monitoring_user}
+                password: ${monitoring_password}
+    namespace: loki
 
   prometheus-crd:
     kubectl:
