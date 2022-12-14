@@ -157,10 +157,6 @@ TODO
 
 TODO
 
-# Takedown
-
-TODO
-
 # History
 
 TODO
