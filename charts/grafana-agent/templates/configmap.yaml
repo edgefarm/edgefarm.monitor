@@ -8,7 +8,55 @@ metadata:
 data:
   agent.yaml: |
     server:
-      log_level: info
+      log_level: debug
+    logs:
+      configs:
+      - name: default
+        clients:
+        - url: {{ .Values.configmap.agent_yaml.logs.configs.default.clients.url }}
+          basic_auth:
+            username: {{ .Values.configmap.agent_yaml.logs.configs.default.clients.basic_auth.username }}
+            password: {{ .Values.configmap.agent_yaml.logs.configs.default.clients.basic_auth.password }}
+          external_labels:
+            edge_node: ${NODE_NAME}
+        positions:
+          filename: /tmp/positions.yaml
+        target_config:
+          sync_period: 10s
+        scrape_configs:
+          - job_name: system
+            pipeline_stages:
+            static_configs:
+            - targets:
+               - {{ .Values.configmap.agent_yaml.logs.configs.default.scrape_configs.job.system.targets }}
+              labels:
+               job: podlogs  # A `job` label is fairly standard in prometheus and useful for linking metrics and logs.
+               host: ${NODE_NAME} # A `host` label will help identify logs from this machine vs others
+               __path__: /var/log/pods/**/*.log  # The path matching uses a third party library: https://github.com/bmatcuk/doublestar
+          - job_name: kernel
+            static_configs:
+              - targets: [localhost]
+                labels:
+                  job: kernel
+                  host: ${NODE_NAME}
+                  __path__: /var/log/kern.log
+          - job_name: syslog
+            static_configs:
+              - targets: [localhost]
+                labels:
+                  job: syslog
+                  host: ${NODE_NAME}
+                  __path__: /var/log/syslog
+          - job_name: journal
+            journal:
+              json: false
+              max_age: 12h
+              path: /var/log/journal
+              labels:
+                job: systemd-journal
+            relabel_configs:
+              - source_labels: ['__journal__systemd_unit']
+                target_label: 'unit'
     metrics:
       global:
         scrape_interval: 1m
@@ -17,11 +65,11 @@ data:
         external_labels:
           edge_node: ${NODE_NAME}
       configs:
-        - name: node-exporter-edgenodes
+        - name: edgenodes-exporter
           scrape_configs:
             - job_name: node_exporter
               static_configs:
-                - targets: {{ .Values.configmap.agent_yaml.config.job.node_exporter.targets }}
+                - targets: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.scrape_configs.job.node_exporter.targets }}
               relabel_configs:
               - source_labels: [__address__]
                 target_label: instance
@@ -34,7 +82,7 @@ data:
               {{- end }}
             - job_name: cadvisor
               static_configs:
-                - targets: {{ .Values.configmap.agent_yaml.config.job.cadvisor.targets }}
+                - targets: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.scrape_configs.job.cadvisor.targets }}
               relabel_configs:
               - source_labels: [__address__]
                 target_label: instance
@@ -53,7 +101,7 @@ data:
                 target_label: instance
                 replacement: ${NODE_NAME}
           remote_write:
-            - url: {{ .Values.configmap.agent_yaml.config.remote_write.url }}
+            - url: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.remote_write.url }}
               basic_auth:
-                username: {{ .Values.configmap.agent_yaml.config.remote_write.basic_auth.username }}
-                password: {{ .Values.configmap.agent_yaml.config.remote_write.basic_auth.password }}
+                username: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.remote_write.basic_auth.username }}
+                password: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.remote_write.basic_auth.password }}

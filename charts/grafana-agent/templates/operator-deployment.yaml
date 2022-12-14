@@ -61,6 +61,12 @@ spec:
                 volumeMounts:
                   - name: agent-yaml
                     mountPath: /etc/agent/
+                  - name: var-log
+                    mountPath: /var/log
+                    readOnly: false
+                  - name: containers-log
+                    mountPath: /var/lib/docker/containers
+                    readOnly: false
                 args:
                   {{- if .Values.extraArgs  }}
                   {{- range .Values.extraArgs  }}
@@ -81,6 +87,12 @@ spec:
                 - name: agent-yaml
                   configMap:
                     name: grafana-agent-yml
+                - name: var-log
+                  hostPath:
+                    path: /var/log
+                - name: containers-log
+                  hostPath:
+                    path: /var/lib/docker/containers
               tolerations:
               {{- toYaml . | nindent 16 }}
               {{- end }}
