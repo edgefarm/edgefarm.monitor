@@ -33,6 +33,7 @@ data:
                job: podlogs  # A `job` label is fairly standard in prometheus and useful for linking metrics and logs.
                host: ${NODE_NAME} # A `host` label will help identify logs from this machine vs others
                __path__: /var/log/pods/**/*.log  # The path matching uses a third party library: https://github.com/bmatcuk/doublestar
+               __path_exclude__: /var/log/pods/**/*.log  # The path matching uses a third party library: https://github.com/bmatcuk/doublestar
           - job_name: kernel
             static_configs:
               - targets: [localhost]
@@ -92,6 +93,12 @@ data:
               - source_labels: [__name__]
                 regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|container_last_seen'
                 action: keep
+                {{- /*
+                modify from which namespaces you don't want to collect metrics.
+                */}}
+              - source_labels: [container_label_io_kubernetes_pod_namespace] 
+                regex: 'kubeedge|edge-monitoring'
+                action: drop
               {{- end }}
             - job_name: leaf-nats
               static_configs:
