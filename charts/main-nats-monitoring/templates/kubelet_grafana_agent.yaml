@@ -1,0 +1,15 @@
+apiVersion: monitoring.grafana.com/v1alpha1
+kind: GrafanaAgent
+metadata:
+  name: kubelet-metrics
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+spec:
+  image: grafana/agent:v0.28.0
+  logLevel: info
+  serviceAccountName: {{ include "main-nats-monitoring.name" . }}
+  metrics:
+    instanceSelector:
+      matchLabels:
+        app.kubernetes.io/name: kubelet-metrics
+    externalLabels:
+      cluster: cloud

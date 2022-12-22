@@ -1,0 +1,11 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: managment-cluster-mimir-creds
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+  labels:
+    app.kubernetes.io/instance: {{ include "main-nats-monitoring.name" . }}
+data:
+  username: {{ .Values.mimir.user | b64enc }}
+  password: {{ .Values.mimir.password | b64enc }}
+type: Opaque

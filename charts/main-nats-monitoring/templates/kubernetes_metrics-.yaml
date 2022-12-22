@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: extra-jobs
+stringData:
+  jobs.yaml: |
+    - bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      job_name: integrations/kubernetes/kubelet
+      kubernetes_sd_configs:
+      - role: node
+      relabel_configs:
+      - replacement: kubernetes.default.svc:443
+        target_label: __address__
+      - regex: (.+)
+        source_labels: [__meta_kubernetes_node_name]
+        replacement: /api/v1/nodes/$1/proxy/metrics
+        target_label: __metrics_path__
+      - action: hashmod
+        modulus: $(SHARDS)
+        source_labels:
+        - __address__
+        target_label: __tmp_hash
+      - action: keep
+        regex: $(SHARD)
+        source_labels:
+        - __tmp_hash
+      metric_relabel_configs:
+      - source_labels: [namespace] 
+        regex: kubeedge|kyverno
+        action: drop
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    - bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      job_name: integrations/kubernetes/cadvisor
+      kubernetes_sd_configs:
+      - role: node
+      relabel_configs:
+      - replacement: kubernetes.default.svc:443
+        target_label: __address__
+      - regex: (.+)
+        replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
+        source_labels:
+        - __meta_kubernetes_node_name
+        target_label: __metrics_path__
+      - action: hashmod
+        modulus: $(SHARDS)
+        source_labels:
+        - __address__
+        target_label: __tmp_hash
+      - action: keep
+        regex: $(SHARD)
+        source_labels:
+        - __tmp_hash
+      metric_relabel_configs:
+      - source_labels: [namespace] 
+        regex: kubeedge|kyverno
+        action: drop
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt

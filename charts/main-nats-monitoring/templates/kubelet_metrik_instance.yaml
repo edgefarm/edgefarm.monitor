@@ -1,0 +1,20 @@
+apiVersion: monitoring.grafana.com/v1alpha1
+kind: MetricsInstance
+metadata:
+  labels:
+    app.kubernetes.io/name: kubelet-metrics
+  name: kubelet-metrics
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+spec:
+  remoteWrite:
+    - url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+      basicAuth:
+        username:
+          name: managment-cluster-mimir-creds
+          key: username
+        password:
+          name: managment-cluster-mimir-creds
+          key: password
+  additionalScrapeConfigs:
+    name: extra-jobs
+    key: jobs.yaml
