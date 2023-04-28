@@ -55,10 +55,25 @@ pipelines:
   #   create_deployments node-exporter
   #   create_deployments service-monitor-for-node-exporter
 
-  deploy-logs: |-
-    # install loging components
-    create_deployments promtail
-    helm install loki-loki-distributed --namespace loki ./dev/charts/loki-distributed --set loki.storageConfig.aws.s3=http://${monitoring_user}:${monitoring_password}@grafana-mimir-minio.monitoring.svc:9000 --set gateway.basicAuth.username=${monitoring_user} --set gateway.basicAuth.password=${monitoring_password}
+  deploy-core: |-
+    # install edge grafana-agent, node-exporter and cadvisor
+    create_deployments edge-node-exporter
+    create_deployments edge-grafana-agent
+    # create_deployments edge-cadvisor
+
+  deploy-backend: |-
+    # install main-nats monitoring
+    # create_deployments main-nats-monitoring
+    create_deployments prometheus-crd
+    # create_deployments grafana
+    create_deployments grafana-mimir
+    create_deployments grafana-agent-operator
+    # run_pipelines deploy-logs
+
+  # deploy-logs: |-
+  #   # install loging components
+  #   create_deployments promtail
+  #   create_deployments loki-distributed
 
   deploy-monitoring: |-
     # install all monitoring setup: grafana, grafana-operator and mimir
@@ -75,16 +90,16 @@ pipelines:
     create_deployments edge-cadvisor
     create_deployments edge-grafana-agent
 
-    # install logging services
-    run_pipelines deploy-logs
+    # # install logging services
+    # run_pipelines deploy-logs
 
   purge-monitoring: |-
     purge_deployments edge-node-exporter edge-cadvisor edge-grafana-agent main-nats-monitoring
     purge_deployments grafana-mimir grafana prometheus-crd grafana-agent-operator
     purge_deployments promtail
-    helm uninstall loki-loki-distributed -n loki
+    helm uninstall loki-distributed -n loki
     kubectl delete pvc -n monitoring --all
-    kubectl delete pvc -n loki --all
+    # kubectl delete pvc -n loki --all
 
 deployments:
   grafana-mimir:
@@ -94,6 +109,14 @@ deployments:
         repo: https://grafana.github.io/helm-charts
         version: "3.3.0"
       values:
+        alertManager:
+          storageClass: local-path
+        ingester:
+          storageClass: local-path
+        store_gateway:
+          storageClass: local-path
+        compactor:
+          storageClass: local-path
         nginx:
           basicAuth:
             enabled: false
@@ -135,16 +158,16 @@ deployments:
                 editable: true
                 secureJsonData:
                   basicAuthPassword: ${mimir_password}
-              - name: Loki
-                type: loki
-                isDefault: false
-                url: http://loki-loki-distributed-gateway.loki.svc
-                editable: true
-                basicAuth: true
-                basicAuthUser: ${monitoring_user}
-                withCredentials: true
-                secureJsonData:
-                  basicAuthPassword: ${monitoring_password}
+              # - name: Loki
+              #   type: loki
+              #   isDefault: false
+              #   url: http://loki-distributed-gateway.loki.svc
+              #   editable: true
+              #   basicAuth: true
+              #   basicAuthUser: ${monitoring_user}
+              #   withCredentials: true
+              #   secureJsonData:
+              #     basicAuthPassword: ${monitoring_password}
     namespace: monitoring
 
   edge-node-exporter:
@@ -182,20 +205,36 @@ deployments:
         name: ./charts/cadvisor/
     namespace: edge-monitoring
 
-  promtail:
-    helm:
-      chart:
-        name: promtail
-        repo: https://grafana.github.io/helm-charts
-        version: "6.6.2"
-      values:
-        config:
-          clients:
-            - url: http://loki-loki-distributed-gateway.loki.svc/loki/api/v1/push
-              basic_auth:
-                username: ${monitoring_user}
-                password: ${monitoring_password}
-    namespace: loki
+  # promtail:
+  #   helm:
+  #     chart:
+  #       name: promtail
+  #       repo: https://grafana.github.io/helm-charts
+  #       version: "6.6.2"
+  #     values:
+  #       config:
+  #         clients:
+  #           - url: http://loki-distributed-gateway.loki.svc/loki/api/v1/push
+  #             basic_auth:
+  #               username: ${monitoring_user}
+  #               password: ${monitoring_password}
+  #   namespace: loki
+
+  # loki-distributed:
+  #   helm:
+  #     chart:
+  #       name: loki-distributed
+  #       path: ./dev/charts/loki-distributed
+  #     values:
+  #       loki:
+  #         storageConfig:
+  #           aws:
+  #             s3: http://${monitoring_user}:${monitoring_password}@grafana-mimir-minio.monitoring.svc:9000
+  #       gateway:
+  #         basicAuth:
+  #           username: ${monitoring_user}
+  #           password: ${monitoring_password}
+  #   namespace: loki
 
   prometheus-crd:
     kubectl:

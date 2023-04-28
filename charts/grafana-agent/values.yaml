@@ -23,30 +23,30 @@ configmap:
           scrape_configs:
             job:
               node_exporter:
-                targets: ["edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100"]
+                targets:
+                  [
+                    "edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100",
+                  ]
               cadvisor:
                 targets: ["edge-cadvisor.edge-monitoring.svc:8080"]
-              leaf_nats:
-                targets:
-                  - "leaf-nats.nats.svc:7777"
           remote_write:
             url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
             basic_auth:
               username: test
               password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
 
-    logs:
-      configs:
-        default:
-          clients:
-            url: http://loki-loki-distributed-gateway.loki.svc/loki/api/v1/push
-            basic_auth:
-              username: test
-              password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
-          scrape_configs:
-            job:
-              system:
-                targets: localhost
+    # logs:
+    #   configs:
+    #     default:
+    #       clients:
+    #         url: http://loki-distributed-gateway.loki.svc/loki/api/v1/push
+    #         basic_auth:
+    #           username: test
+    #           password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+    #       scrape_configs:
+    #         job:
+    #           system:
+    #             targets: localhost
 
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
@@ -86,17 +86,17 @@ resources: {}
 nodeSelector: {}
 # -- Tolerations applied to Pods
 tolerations:
-  - effect: NoExecute
-    key: edgefarm.applications
+  - effect: NoSchedule
+    key: edgefarm.io
     operator: Exists
 # -- Pod affinity configuration
-# affinity: {}
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: node-role.kubernetes.io/edge
-              operator: Exists
-targetNodeGroupSelectors:
+affinity: {}
+# affinity:
+#   nodeAffinity:
+#     requiredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#         - matchExpressions:
+#             - key: node-role.kubernetes.io/edge
+#               operator: Exists
+nodepoolSelector:
   monitor.edgefarm.io/metrics: "default"
