@@ -19,6 +19,7 @@ service:
   listenOnAllInterfaces: true
   annotations:
     prometheus.io/scrape: "true"
+    openyurt.io/topologyKeys: openyurt.io/nodepool
 # Additional environment variables that will be passed to the daemonset
 env: {}
 ##  env:
@@ -108,17 +109,18 @@ hostRootFsMount:
   mountPropagation: HostToContainer
 
 tolerations:
-  - effect: NoExecute
-    key: edgefarm.applications
+  - effect: NoSchedule
+    key: edgefarm.io
     operator: Exists
 
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: node-role.kubernetes.io/edge
-              operator: Exists
+affinity: {}
+# affinity:
+#   nodeAffinity:
+#     requiredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#         - matchExpressions:
+#             - key: node-role.kubernetes.io/edge
+#               operator: Exists
 # Annotations to be added to node exporter pods
 podAnnotations:
   # Fix for very slow GKE cluster upgrades
@@ -237,5 +239,5 @@ verticalPodAutoscaler:
 # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".
 # updateMode: Auto
 
-targetNodeGroupSelectors:
+nodepoolSelector:
   monitor.edgefarm.io/metrics: "default"
