@@ -41,65 +41,119 @@ commands:
     NC='\033[0m' # No Color
     echo -e "${BGREEN}Usage of ${BRED}edgefarm.monitoring:${NC}"
     echo -e "${GREEN} General monitoring commands:${NC}"
-    echo -e "${BOLD}  devspace run-pipeline init                        # ${GREY}Create password for monitoring and store it locally${NC}"
-    echo -e "${BOLD}  devspace run-pipeline deploy-monitoring           # ${GREY}Creates full setup of monitoring${NC}"
-    echo -e "${BOLD}  devspace run-pipeline purge-monitoring            # ${GREY}Remove monitoring setup${NC}"
+    echo -e "${BOLD}  devspace run-pipeline init                          # ${GREY}Create password for monitoring and store it locally${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-core                   # ${GREY}Deploy all monitoring components to core cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-core                    # ${GREY}Remove all monitoring components from core cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-backend                # ${GREY}Deploy all monitoring components to backend cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-backend                 # ${GREY}Remove all monitoring components from backend cluster${NC}"
+    echo -e "${GREEN} Sub-Targets for core cluster:${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-grafana-agent          # ${GREY}Deploy grafana-agent to edge nodes${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-grafana-agent           # ${GREY}Remove grafana-agent from edge nodes${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-node-exporter          # ${GREY}Deploy node exporter to edge nodes${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-node-exporter           # ${GREY}Remove node exporter from edge nodes${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline deploy-cadvisor               # ${GREY}Deploy cadvisor to edge nodes${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline purge-cadvisor                # ${GREY}Remove cadvisor to edge nodes${NC}"
+    echo -e "${GREEN} Sub-Targets for backend cluster (metrics):${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-prometheus-crd         # ${GREY}Deploy prometheus-crd to backend cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-prometheus-crd          # ${GREY}Remove prometheus-crd from backend cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-grafana-mimir          # ${GREY}Deploy grafana-mimir to backend cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-grafana-mimir           # ${GREY}Remove grafana-mimir from backend cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline deploy-grafana                # ${GREY}Deploy grafana to backend cluster${NC}"
+    echo -e "${BOLD}  devspace run-pipeline purge-grafana                 # ${GREY}Remove grafana from backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline deploy-grafana-agent-operator # ${GREY}Deploy grafana-agent-operator to backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline purge-grafana-agent-operator  # ${GREY}Remove grafana-agent-operator from backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline deploy-main-nats-monitoring   # ${GREY}Deploy main-nats-monitoring to backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline purge-main-nats-monitoring    # ${GREY}Remove main-nats-monitoring from backend cluster${NC}"
+    # echo -e "${GREEN} Sub-Targets for backend cluster (logs):${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline deploy-promtail               # ${GREY}Deploy promtail to backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline purge-promtail                # ${GREY}Remove promtail from backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline deploy-loki-distributed       # ${GREY}Deploy loki-distributed to backend cluster${NC}"
+    # echo -e "${BOLD}  devspace run-pipeline purge-loki-distributed        # ${GREY}Remove loki-distributed from backend cluster${NC}"
 
 pipelines:
   init: |-
     # generating password for monitoring
     init_monitoring_password ${monitoring_password_dir}
 
-  # deploy-node-exporter: |-
-  #   # deploy node exporter
-  #   create_deployments node-exporter
-  #   create_deployments service-monitor-for-node-exporter
-
   deploy-core: |-
     # install edge grafana-agent, node-exporter and cadvisor
-    create_deployments edge-node-exporter
+    run_pipelines deploy-grafana-agent
+    run_pipelines deploy-node-exporter
+    # run_pipelines deploy-cadvisor
+
+  purge-core: |-
+    run_pipelines purge-node-exporter
+    run_pipelines purge-grafana-agent
+    # run_pipelines purge-cadvisor
+
+  deploy-cadvisor: |-
+    create_deployments edge-cadvisor
+  purge-cadvisor: |-
+    purge_deployments edge-cadvisor
+
+  deploy-grafana-agent: |-
     create_deployments edge-grafana-agent
-    # create_deployments edge-cadvisor
+  purge-grafana-agent: |-
+    purge_deployments edge-grafana-agent
+
+  deploy-node-exporter: |-
+    create_deployments edge-node-exporter
+  purge-node-exporter: |-
+    purge_deployments edge-node-exporter
 
   deploy-backend: |-
-    # install main-nats monitoring
-    # create_deployments main-nats-monitoring
+    run_pipelines deploy-prometheus-crd
+    run_pipelines deploy-grafana-mimir
+    run_pipelines deploy-grafana
+    # run_pipelines deploy-promtail
+    # run_pipelines deploy-loki-distributed
+
+  purge-backend: |-
+    # run_pipelines purge-loki-distributed
+    # run_pipelines purge-promtail
+    run_pipelines purge-grafana-mimir
+    run_pipelines purge-grafana
+    run_pipelines purge-prometheus-crd
+
+  deploy-prometheus-crd: |-
     create_deployments prometheus-crd
-    # create_deployments grafana
+
+  purge-prometheus-crd: |-
+    purge_deployments prometheus-crd
+
+  deploy-grafana-mimir: |-
     create_deployments grafana-mimir
-    create_deployments grafana-agent-operator
-    # run_pipelines deploy-logs
 
-  # deploy-logs: |-
-  #   # install loging components
-  #   create_deployments promtail
-  #   create_deployments loki-distributed
+  purge-grafana-mimir: |-
+    purge_deployments grafana-mimir
 
-  deploy-monitoring: |-
-    # install all monitoring setup: grafana, grafana-operator and mimir
-    create_deployments prometheus-crd
+  deploy-grafana: |-
     create_deployments grafana
-    create_deployments grafana-mimir
+  purge-grafana: |-
+    purge_deployments grafana
+
+  deploy-grafana-agent-operator: |-
     create_deployments grafana-agent-operator
 
-    # install main-nats monitoring
+  purge-grafana-agent-operator: |-
+    purge_deployments grafana-agent-operator
+
+  deploy-main-nats-monitoring: |-
     create_deployments main-nats-monitoring
 
-    # install edge grafana-agent, node-exporter and cadvisor
-    create_deployments edge-node-exporter
-    create_deployments edge-cadvisor
-    create_deployments edge-grafana-agent
+  purge-main-nats-monitoring: |-
+    purge_deployments main-nats-monitoring
 
-    # # install logging services
-    # run_pipelines deploy-logs
+  deploy-loki-distributed: |-
+    create_deployments loki-distributed
 
-  purge-monitoring: |-
-    purge_deployments edge-node-exporter edge-cadvisor edge-grafana-agent main-nats-monitoring
-    purge_deployments grafana-mimir grafana prometheus-crd grafana-agent-operator
+  purge-loki-distributed: |-
+    purge_deployments loki-distributed
+
+  deploy-promtail: |-
+    create_deployments promtail
+  purge-promtail: |-
     purge_deployments promtail
-    helm uninstall loki-distributed -n loki
-    kubectl delete pvc -n monitoring --all
-    # kubectl delete pvc -n loki --all
 
 deployments:
   grafana-mimir:
@@ -249,27 +303,27 @@ deployments:
         - https://raw.githubusercontent.com/grafana/agent/main/production/operator/crds/monitoring.grafana.com_podlogs.yaml
     namespace: monitoring
 
-  grafana-agent-operator:
-    helm:
-      chart:
-        name: grafana-agent-operator
-        repo: https://grafana.github.io/helm-charts
-        version: "0.2.8"
-      values: {}
-    namespace: monitoring
+  # grafana-agent-operator:
+  #   helm:
+  #     chart:
+  #       name: grafana-agent-operator
+  #       repo: https://grafana.github.io/helm-charts
+  #       version: "0.2.8"
+  #     values: {}
+  #   namespace: monitoring
 
-  main-nats-monitoring:
-    helm:
-      chart:
-        name: main-nats-monitoring
-        path: ./charts/main-nats-monitoring
-      values:
-        mimir:
-          user: ${monitoring_user}
-          password: ${monitoring_password}
-        agent:
-          image: grafana/agent:v0.28.0
-    namespace: monitoring
+  # main-nats-monitoring:
+  #   helm:
+  #     chart:
+  #       name: main-nats-monitoring
+  #       path: ./charts/main-nats-monitoring
+  #     values:
+  #       mimir:
+  #         user: ${monitoring_user}
+  #         password: ${monitoring_password}
+  #       agent:
+  #         image: grafana/agent:v0.28.0
+  #   namespace: monitoring
 
   # Old setup we will need in future. Don't delete it yet
   # node-exporter:

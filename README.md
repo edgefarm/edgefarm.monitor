@@ -25,19 +25,24 @@
   <h2 align="center">edgefarm.monitor</h2>
 
   <p align="center">
-    TODO: edgefarm.monitor description text🤑 🚀
+    Monitoring your edge nodes and workload made easy.
   </p>
   <hr />
 </p>
 
 # About The Project
 
-`edgefarm.monitoring` uses different open source tools to provide monitoring of edge nodes, default k8s nodes and monitoring of application on them.
+Using `EdgeFarm.monitor` there is a easy way of monitoring everything you need. Let it be edge node hardware metrics or accessing logs of your applications. 
+
+`EdgeFarm.monitor` uses different open source tools like Grafana, Grafana Mimir, Node Exporter, Cadvisor, the Loki stack, to provide monitoring of edge nodes and monitoring of application running on them.
 
 ## Features
 
-- monitoring for k8s nodes and applicatons on them
-- monitoring for edge nodes and applicatons on them
+- Monitor metrics of your edge nodes (CPU, load, memory, disk I/O, thermal information, network I/O)
+- Monitor applications you deployed
+- Accessing logs of your applications
+- Managing alerts
+- Metrics even are collected during times of unreliable network connections
 
 ![Product Name Screen Shot][product-screenshot]
 
@@ -49,122 +54,74 @@ Follow those simple steps, to install edgefarm.monitor in your cluster.
 
 ## ✔️ Prerequisites
 
-- [edgefarm.core](https://github.com/edgefarm/edgefarm.core)
+- [(local kind) cluster running edgefarm.core](https://github.com/edgefarm/edgefarm.core)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)4
 - [devspace](https://devspace.sh/)
-- [kind](https://kind.sigs.k8s.io)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [kustomize](https://kustomize.io/)
 - [helm](https://helm.sh/)
-- [mkcert](https://github.com/FiloSottile/mkcert)
-- [jq](https://stedolan.github.io/jq/)
-
-## 💡 [Do not skip] Mandatory step
-
-TODO, maybe eliiminate this section
 
 ## 🎯 Installation
 
 To init and deploy monitoring, execute the following commands.
-The installation takes about 3 minutes.
+The installation takes several minutes. The deployment is split up in two sub-targets: core and backend clusters.
+
 
 Have a look at the `help` command to get an overview of all available commands.
 
 ```console
 $ devspace run help
+Usage of edgefarm.monitoring:
  General monitoring commands:
-  devspace run init                                 Create password for monitoring and store it locally
-  devspace run deploy-monitoring                    Creates full setup of monitoring
-  devspace run-pipeline purge-monitoring            Remove monitoring setup
+  devspace run-pipeline init                          # Create password for monitoring and store it locally
+  devspace run-pipeline deploy-core                   # Deploy all monitoring components to core cluster
+  devspace run-pipeline purge-core                    # Remove all monitoring components from core cluster
+  devspace run-pipeline deploy-backend                # Deploy all monitoring components to backend cluster
+  devspace run-pipeline purge-backend                 # Remove all monitoring components from backend cluster
+ Sub-Targets for core cluster:
+  devspace run-pipeline deploy-grafana-agent          # Deploy grafana-agent to edge nodes
+  devspace run-pipeline purge-grafana-agent           # Remove grafana-agent from edge nodes
+  devspace run-pipeline deploy-node-exporter          # Deploy node exporter to edge nodes
+  devspace run-pipeline purge-node-exporter           # Remove node exporter from edge nodes
+ Sub-Targets for backend cluster (metrics):
+  devspace run-pipeline deploy-prometheus-crd         # Deploy prometheus-crd to backend cluster
+  devspace run-pipeline purge-prometheus-crd          # Remove prometheus-crd from backend cluster
+  devspace run-pipeline deploy-grafana-mimir          # Deploy grafana-mimir to backend cluster
+  devspace run-pipeline purge-grafana-mimir           # Remove grafana-mimir from backend cluster
+  devspace run-pipeline deploy-grafana                # Deploy grafana to backend cluster
+  devspace run-pipeline purge-grafana                 # Remove grafana from backend cluster
 ```
 
-And spin up the monitoring:
+Make sure that you can access both clusters, core and backend.
 
 ```console
 devspace run init
-devspace run deploy-monitoring
+# Run this in the kubectl context of your core cluster
+devspace run deploy-core
+# Run this in the kubectl context of your backend cluster
+devspace run deploy-backend
 ```
 
-Once done, you'll find the following pods running:
-
-```console
-$ kubectl get pods -n monitoring
-NAMESPACE            NAME                                            READY   STATUS              RESTARTS   AGE
-grafana-74796596fd-sxmzn                           1/1     Running     0          79s
-grafana-agent-operator-5f657cdf4-82z5x             1/1     Running     0          39s
-grafana-mimir-alertmanager-0                       1/1     Running     0          74s
-grafana-mimir-compactor-0                          0/1     Running     0          74s
-grafana-mimir-distributor-689cdd7965-7hp7g         1/1     Running     0          74s
-grafana-mimir-ingester-0                           0/1     Running     0          74s
-grafana-mimir-ingester-1                           0/1     Running     0          74s
-grafana-mimir-ingester-2                           0/1     Running     0          74s
-grafana-mimir-make-minio-buckets--1-g5wwf          0/1     Completed   0          74s
-grafana-mimir-minio-67599d86b-ptc99                1/1     Running     0          74s
-grafana-mimir-nginx-57db45f4c5-ltj89               1/1     Running     0          74s
-grafana-mimir-overrides-exporter-7c89b68f5-kkpcm   1/1     Running     0          74s
-grafana-mimir-querier-c4f8875f8-cflhs              1/1     Running     0          74s
-grafana-mimir-querier-c4f8875f8-hqvcz              1/1     Running     0          74s
-grafana-mimir-query-frontend-75b98c69c5-hnpz2      1/1     Running     0          74s
-grafana-mimir-query-scheduler-6c484c5bfb-hw9xg     1/1     Running     0          74s
-grafana-mimir-query-scheduler-6c484c5bfb-x6q24     1/1     Running     0          74s
-grafana-mimir-ruler-7c789cbc4d-pcghw               1/1     Running     0          74s
-grafana-mimir-store-gateway-0                      0/1     Running     0          74s
-main-nats-monitoring-0                             2/2     Running     0          36s
-```
+Obtain the grafana password and access grafana:
 
 ```console
-$ kubectl get pods -n loki
-NAMESPACE            NAME                                            READY   STATUS              RESTARTS   AGE
-loki-loki-distributed-compactor-5f76749b97-z9dz8        1/1     Running   0          79s
-loki-loki-distributed-distributor-66c884fcd7-6rtgv      1/1     Running   0          79s
-loki-loki-distributed-distributor-66c884fcd7-xhrz2      1/1     Running   0          79s
-loki-loki-distributed-gateway-85f85b8675-h4ljb          1/1     Running   0          79s
-loki-loki-distributed-ingester-0                        1/1     Running   0          79s
-loki-loki-distributed-ingester-1                        1/1     Running   0          79s
-loki-loki-distributed-querier-0                         1/1     Running   0          79s
-loki-loki-distributed-querier-1                         1/1     Running   0          79s
-loki-loki-distributed-query-frontend-66b88985cc-sktxb   1/1     Running   0          79s
-loki-loki-distributed-table-manager-576c8cb5f6-kgwmz    1/1     Running   0          79s
-promtail-hrnrx                                          1/1     Running   0          80s
-promtail-xvnf5                                          1/1     Running   0          80s
+# Run these commands in the kubectl context of your backend cluster
+$ kubectl get secrets -n monitoring grafana -o jsonpath="{.data.admin-password}" | base64 -d | xargs echo
+Vi5l0enzqQC3VLhiGYZzxPvz54O6nNJ*******WmM
+$ kubectl port-forward svc/grafana 8080:80
 ```
-After this you can access http://grafana.localhost/login to see metrics and logs.
-By default:
-User is admin
-Password you can find in:
-- File which was create by this command
-```console
-devspace run init
-```
-$HOME/.devspace/edgefarn.monitor/monitoring_password/
+After this you can access http://localhost:8080/login to see metrics and logs. The default user is `admin`.
 
-- Grafana secret
-```console
-kubectl get secrets -n monitoring grafana -o jsonpath="{.data.admin-password}" | base64 -d | xargs echo
-```
-
-# Usage
+# 💡 Usage
 
 To uninstall monitoring setup run:
 ```console
-devspace run-pipeline purge-monitoring
+# run this from your kubectl context for the core cluster
+devspace run-pipeline purge-core
+# run this from your kubectl context for the backend cluster
+devspace run-pipeline purge-backend
 ```
 
-# Examples
-
-TODO
-
-# Debugging
-
-TODO
-
-# History
-
-TODO
-
-# Contributing
-
-TODO
-
+# 🤝🏽 Contributing
 
 Code contributions are very much **welcome**.
 
@@ -176,4 +133,4 @@ Code contributions are very much **welcome**.
 
 # 🫶 Acknowledgements
 
-TODO
+Thanks to the great open source projects Grafana, Grafana Mimir, Node Exporter, Cadvisor and the Loki stack!
