@@ -8,7 +8,7 @@ metadata:
 data:
   agent.yaml: |
     server:
-      log_level: debug
+      log_level: info
     logs:
       configs:
       - name: default
@@ -64,7 +64,7 @@ data:
               {{- if eq .Values.monitoring "default" }}
               metric_relabel_configs:
               - source_labels: [__name__]
-                regex: '(.*cpu.*)|(.*memory.*)|(.*network.*)|(.*disk.*)|(.*filesystem.*)|(.*sockstat.*)|node_uname_info'
+                regex: '(.*load.*)|(.*hwmnon.*)|(.*cpu.*)|(.*memory.*)|(.*network.*)|(.*disk.*)|(.*filesystem.*)|(.*sockstat.*)|node_uname_info|node_time_seconds|node_boot_time_seconds'
                 action: keep
               {{- end }}
           remote_write:
