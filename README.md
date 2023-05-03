@@ -44,8 +44,6 @@ Using `EdgeFarm.monitor` there is a easy way of monitoring everything you need. 
 - Managing alerts
 - Metrics even are collected during times of unreliable network connections
 
-![Product Name Screen Shot][product-screenshot]
-
 <!-- GETTING STARTED -->
 
 # Getting Started
@@ -54,8 +52,8 @@ Follow those simple steps, to install edgefarm.monitor in your cluster.
 
 ## ✔️ Prerequisites
 
-- [(local kind) cluster running edgefarm.core](https://github.com/edgefarm/edgefarm.core)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)4
+- [(local) cluster running edgefarm.core](https://github.com/edgefarm/edgefarm.core)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [devspace](https://devspace.sh/)
 - [kustomize](https://kustomize.io/)
 - [helm](https://helm.sh/)
@@ -94,11 +92,11 @@ Usage of edgefarm.monitoring:
 Make sure that you can access both clusters, core and backend.
 
 ```console
-devspace run init
+$ devspace run init
 # Run this in the kubectl context of your core cluster
-devspace run deploy-core
+$ devspace run deploy-core
 # Run this in the kubectl context of your backend cluster
-devspace run deploy-backend
+$ devspace run deploy-backend
 ```
 
 Obtain the grafana password and access grafana:
