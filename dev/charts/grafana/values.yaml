@@ -39,24 +39,9 @@ dashboardProviders:
 
 dashboards:
   default:
-    # nats-dashboard:
-    #   url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/nats.json
-    #   token: ""
-    node-exporter-custom-dashboard:
-      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/node_exporter.json
+    edge-nodes-dashboard:
+      url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/edge_nodes.json
       token: ""
-    # docker-containers-dashboard:
-    #   url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/docker_containers.json
-    #   token: ""
-    # cadvisor-custom:
-    #   url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/cadvisor_custom.json
-    #   token: ""
-    # edge_system_logs:
-    #   url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/edge_system_logs.json
-    #   token: ""
-    # edge_journal_logs:
-    #   url: https://raw.githubusercontent.com/edgefarm/grafana-dashboards/main/dashboards/edge_journal_logs.json
-    #   token: ""
 #if you want persistend disk
 # persistence:
 #   type: pvc
