@@ -12,7 +12,9 @@ podLabels: {}
 podSecurityContext: {}
 # -- Container security context (allowPrivilegeEscalation, etc.)
 containerSecurityContext: {}
+
 monitoring: default
+
 configmap:
   agent_yaml:
     global:
@@ -27,14 +29,15 @@ configmap:
                   [
                     "edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100",
                   ]
-              cadvisor:
-                targets: ["edge-cadvisor.edge-monitoring.svc:8080"]
           remote_write:
             url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
             basic_auth:
               username: test
               password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
-
+          # cadvisor is included this way
+          # job:
+          #   cadvisor:
+          #     targets: ["edge-cadvisor.edge-monitoring.svc:8080"]
     # logs:
     #   configs:
     #     default:
@@ -64,7 +67,7 @@ image:
   # -- Image repo
   repository: grafana/agent
   # -- Image tag
-  tag: v0.28.0
+  tag: v0.33.1
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image pull secrets
