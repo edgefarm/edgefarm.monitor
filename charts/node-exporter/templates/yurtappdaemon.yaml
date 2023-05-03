@@ -16,10 +16,10 @@ spec:
         name: {{ template "prometheus-node-exporter.fullname" . }}
         labels: 
 {{- include "prometheus-node-exporter.labels" . | indent 10 }}
-        # {{- with .Values.annotations }}
-        # annotations:
-        # {{- toYaml . | nindent 2 }}
-        # {{- end }}
+        {{- with .Values.podAnnotations }}
+        annotations:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
       spec:
         replicas: 1
         selector:
@@ -55,14 +55,11 @@ spec:
                 image: {{ include "prometheus-node-exporter.image" . }}
                 imagePullPolicy: {{ .Values.image.pullPolicy }}
                 args:
-                  - --path.procfs=/host/proc
-                  - --path.sysfs=/host/sys
-                  {{- if .Values.hostRootFsMount.enabled }}
-                  - --path.rootfs=/host/root
-                  {{- end }}
                   - --web.listen-address=[$(HOST_IP)]:{{ .Values.service.port }}
-      {{- if .Values.extraArgs }}
-      {{ toYaml .Values.extraArgs | indent 20 }}
+            {{- if .Values.extraArgs }}
+              {{- range $_, $arg := .Values.extraArgs }}
+                  - {{ $arg }}
+              {{- end }}
             {{- end }}
                 {{- with .Values.containerSecurityContext }}
                 securityContext: {{ toYaml . | nindent 20 }}
@@ -116,22 +113,8 @@ spec:
                   successThreshold: {{ .Values.readinessProbe.successThreshold }}
                   timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
                 resources:
-      {{ toYaml .Values.resources | indent 12 }}
+          {{- toYaml .Values.resources | nindent 18 }}
                 volumeMounts:
-                  - name: proc
-                    mountPath: /host/proc
-                    readOnly:  true
-                  - name: sys
-                    mountPath: /host/sys
-                    readOnly: true
-                  {{- if .Values.hostRootFsMount.enabled }}
-                  - name: root
-                    mountPath: /host/root
-                    {{- with .Values.hostRootFsMount.mountPropagation }}
-                    mountPropagation: {{ . }}
-                    {{- end }}
-                    readOnly: true
-                  {{- end }}
                   {{- if .Values.extraHostVolumeMounts }}
                   {{- range $_, $mount := .Values.extraHostVolumeMounts }}
                   - name: {{ $mount.name }}
@@ -203,17 +186,6 @@ spec:
 {{ toYaml . | indent 14 }}
           {{- end }}
             volumes:
-              - name: proc
-                hostPath:
-                  path: /proc
-              - name: sys
-                hostPath:
-                  path: /sys
-              {{- if .Values.hostRootFsMount.enabled }}
-              - name: root
-                hostPath:
-                  path: /
-              {{- end }}
               {{- if .Values.extraHostVolumeMounts }}
               {{- range $_, $mount := .Values.extraHostVolumeMounts }}
               - name: {{ $mount.name }}

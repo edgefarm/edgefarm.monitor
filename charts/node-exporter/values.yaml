@@ -4,7 +4,7 @@
 image:
   repository: quay.io/prometheus/node-exporter
   # Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
-  tag: ""
+  tag: "v1.5.0"
   pullPolicy: IfNotPresent
   sha: ""
 imagePullSecrets: []
@@ -52,17 +52,14 @@ updateStrategy:
   type: RollingUpdate
   rollingUpdate:
     maxUnavailable: 1
-resources: {}
-# We usually recommend not to specify default resources and to leave this as a conscious
-# choice for the user. This also increases chances charts run on environments with little
-# resources, such as Minikube. If you do want to specify resources, uncomment the following
-# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-# limits:
-#   cpu: 200m
-#   memory: 50Mi
-# requests:
-#   cpu: 100m
-#   memory: 30Mi
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 50Mi
+  requests:
+    cpu: 100m
+    memory: 30Mi
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -99,14 +96,6 @@ hostNetwork: true
 # Share the host process ID namespace
 hostPID: true
 # Mount the node's root file system (/) at /host/root in the container
-hostRootFsMount:
-  enabled: true
-  # Defines how new mounts in existing mounts on the node or in the container
-  # are propagated to the container or node, respectively. Possible values are
-  # None, HostToContainer, and Bidirectional. If this field is omitted, then
-  # None is used. More information on:
-  # https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation
-  mountPropagation: HostToContainer
 
 tolerations:
   - effect: NoSchedule
@@ -149,19 +138,43 @@ nodeSelector: {}
 # priorityClassName: ""
 
 ## Additional container arguments
-##
-extraArgs: []
-#   - --collector.diskstats.ignored-devices=^(ram|loop|fd|(h|s|v)d[a-z]|nvme\\d+n\\d+p)\\d+$
-#   - --collector.textfile.directory=/run/prometheus
+extraArgs:
+  - --collector.disable-defaults
+  - --collector.cpu
+  - --collector.diskstats
+  - --collector.loadavg
+  - --collector.filesystem
+  - --collector.hwmon
+  - --collector.meminfo
+  - --collector.netclass
+  - --collector.netdev
+  - --collector.netstat
+  - --collector.stat
+  - --collector.time
+  - --collector.uname
+  - --collector.wifi
+  - --path.procfs=/host/proc
+  - --path.sysfs=/host/sys
+  - --path.rootfs=/host/root
 
 ## Additional mounts from the host to node-exporter container
 ##
-extraHostVolumeMounts: []
-#  - name: <mountName>
-#    hostPath: <hostPath>
-#    mountPath: <mountPath>
-#    readOnly: true|false
-#    mountPropagation: None|HostToContainer|Bidirectional
+extraHostVolumeMounts:
+  - name: proc
+    hostPath: /proc
+    mountPath: /host/proc
+    readOnly: true
+    mountPropagation: HostToContainer
+  - name: sys
+    hostPath: /sys
+    mountPath: /host/sys
+    readOnly: true
+    mountPropagation: HostToContainer
+  - name: root
+    hostPath: /
+    mountPath: /host/root
+    readOnly: true
+    mountPropagation: HostToContainer
 
 ## Additional configmaps to be mounted.
 ##
