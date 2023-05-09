@@ -20,6 +20,12 @@ jobs:
           fetch-depth: 0
       - name: Setup updateChart
         uses: edgefarm/setup-updatechart@v1.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.HELM_CHART_RELEASER_TOKEN }}
@@ -28,5 +34,8 @@ jobs:
         run: |-
           #!/bin/bash
           set -e
+          # add more plugins: https://semantic-release.gitbook.io/semantic-release/extending/plugins-list
           npm install @edgefarm/semantic-release-helm-oci -D
-          npx -c semantic-release
+          # the ... || true is to prevent the script from failing caused by a bug in semantic-release regarding 
+          # rate limit changes on github. See https://github.com/semantic-release/github/pull/487
+          npx -c semantic-release || true
