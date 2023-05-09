@@ -1,9 +1,13 @@
 name: Release
+
 on:
-  push:
+  workflow_run:
+    workflows: ["Lint Commit Messages"]
     branches:
       - main
       - beta
+    types:
+      - completed
 
 jobs:
   release:
@@ -14,7 +18,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Setup updateChart
+        uses: edgefarm/setup-updatechart@v1.1.0
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+          GITHUB_TOKEN: ${{ secrets.HELM_CHART_RELEASER_TOKEN }}
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |-
+          #!/bin/bash
+          set -e
+          npm install @edgefarm/semantic-release-helm-oci -D
+          npx -c semantic-release

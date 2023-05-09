@@ -10,7 +10,7 @@ vars:
       set -e
       echo $(cat ${monitoring_password_dir}/password)
   monitoring_user:
-    value: edgefarm-monitor
+    value: agent
 
 functions:
   init_monitoring_password: |-

@@ -18,7 +18,7 @@ monitoring: default
 configmap:
   agent_yaml:
     global:
-      remote_write: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
+      remote_write: https://mimir.edgefarm.dev/api/v1/push
     metrics:
       configs:
         edgenodes_exporter:
@@ -30,10 +30,7 @@ configmap:
                     "edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100",
                   ]
           remote_write:
-            url: http://grafana-mimir-nginx.monitoring.svc:80/api/v1/push
-            basic_auth:
-              username: test
-              password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
+            url: https://mimir.edgefarm.dev/api/v1/push
           # cadvisor is included this way
           # job:
           #   cadvisor:
@@ -83,6 +80,20 @@ extraArgs:
   - -enable-features=integrations-next
   - -config.file=/etc/agent/agent.yaml
   - -config.expand-env
+# -- List of additional environment variables
+# extraEnvs: []
+extraEnvs:
+  - name: MIMIR_AGENT_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: mimir-remote-write-credentials
+        key: secret
+  - name: MIMIR_AGENT_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mimir-remote-write-credentials
+        key: secret
+
 # -- Resource limits and requests config
 resources: {}
 # -- nodeSelector configuration

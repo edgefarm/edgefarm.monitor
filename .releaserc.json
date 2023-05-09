@@ -1,0 +1,24 @@
+{
+  "branches": [
+    {
+      "name": "main"
+    },
+    {
+      "name": "beta",
+      "prerelease": true
+    }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@edgefarm/semantic-release-helm-oci",
+      {
+        "chartPath": "charts/grafana-agent",
+        "registry": "oci://ghcr.io/edgefarm/edgefarm.monitor",
+        "skipAppVersion": true
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

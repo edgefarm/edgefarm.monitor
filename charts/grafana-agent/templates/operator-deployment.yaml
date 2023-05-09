@@ -46,6 +46,9 @@ spec:
               image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               env:
+                {{- with .Values.extraEnvs  }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
                 - name: NODE_NAME
                   valueFrom:
                     fieldRef:

@@ -70,5 +70,5 @@ data:
           remote_write:
             - url: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.remote_write.url }}
               basic_auth:
-                username: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.remote_write.basic_auth.username }}
-                password: {{ .Values.configmap.agent_yaml.metrics.configs.edgenodes_exporter.remote_write.basic_auth.password }}
+                username: ${MIMIR_AGENT_USERNAME}
+                password: ${MIMIR_AGENT_PASSWORD}
