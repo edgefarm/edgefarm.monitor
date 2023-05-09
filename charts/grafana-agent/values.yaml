@@ -86,13 +86,13 @@ extraEnvs:
   - name: MIMIR_AGENT_USERNAME
     valueFrom:
       secretKeyRef:
-        name: mimir-remote-write-credentials
-        key: secret
+        name: mimir-agent-creds
+        key: mimirAgentUsername
   - name: MIMIR_AGENT_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: mimir-remote-write-credentials
-        key: secret
+        name: mimir-agent-creds
+        key: mimirAgentPassword
 
 # -- Resource limits and requests config
 resources: {}

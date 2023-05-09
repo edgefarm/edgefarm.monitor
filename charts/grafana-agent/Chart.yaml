@@ -1,12 +1,12 @@
 apiVersion: v2
 appVersion: 0.1.0
-description: A Helm chart for Grafana Agent Operator running in a EdgeFarm cluster
+description: A Helm chart for Grafana Agent running in a EdgeFarm cluster
 home: https://github.com/edgefarm/edgefarm.monitor/tree/beta/charts/grafana-agent
 icon: https://raw.githubusercontent.com/grafana/agent/v0.28.0/docs/sources/assets/logo_and_name.png
 maintainers:
   - email: armin.schlegel@gmx.de
     name: Armin Schlegel
-name: grafana-agent-operator
+name: grafana-agent
 sources:
   - https://github.com/edgefarm/edgefarm.monitor/tree/beta/charts/grafana-agent
 type: application

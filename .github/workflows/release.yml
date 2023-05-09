@@ -10,7 +10,7 @@ on:
       - completed
 
 jobs:
-  release:
+  on-success:
     name: Release
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +35,7 @@ jobs:
           #!/bin/bash
           set -e
           # add more plugins: https://semantic-release.gitbook.io/semantic-release/extending/plugins-list
-          npm install @edgefarm/semantic-release-helm-oci -D
+          npm install @semantic-release/github @edgefarm/semantic-release-helm-oci -D
           # the ... || true is to prevent the script from failing caused by a bug in semantic-release regarding 
           # rate limit changes on github. See https://github.com/semantic-release/github/pull/487
           npx -c semantic-release || true
