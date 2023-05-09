@@ -64,7 +64,7 @@ data:
               {{- if eq .Values.monitoring "default" }}
               metric_relabel_configs:
               - source_labels: [__name__]
-                regex: '(.*load.*)|(.*hwmnon.*)|(.*cpu.*)|(.*memory.*)|(.*network.*)|(.*disk.*)|(.*filesystem.*)|(.*sockstat.*)|node_uname_info|node_time_seconds|node_boot_time_seconds'
+                regex: '(.*load.*)|(.*hwmon.*)|(.*cpu.*)|(.*memory.*)|(.*network.*)|(.*disk.*)|(.*filesystem.*)|(.*sockstat.*)|node_uname_info|node_time_seconds|node_boot_time_seconds'
                 action: keep
               {{- end }}
           remote_write:
