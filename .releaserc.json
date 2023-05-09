@@ -19,6 +19,14 @@
         "skipAppVersion": true
       }
     ],
+    [
+      "@edgefarm/semantic-release-helm-oci",
+      {
+        "chartPath": "charts/node-exporter",
+        "registry": "oci://ghcr.io/edgefarm/edgefarm.monitor",
+        "skipAppVersion": true
+      }
+    ],
     "@semantic-release/github"
   ]
 }
