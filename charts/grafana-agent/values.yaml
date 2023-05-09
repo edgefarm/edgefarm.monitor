@@ -81,6 +81,7 @@ extraArgs:
   - -enable-features=integrations-next
   - -config.file=/etc/agent/agent.yaml
   - -config.expand-env
+
 # -- List of additional environment variables
 # extraEnvs: []
 extraEnvs:
@@ -106,12 +107,5 @@ tolerations:
     operator: Exists
 # -- Pod affinity configuration
 affinity: {}
-# affinity:
-#   nodeAffinity:
-#     requiredDuringSchedulingIgnoredDuringExecution:
-#       nodeSelectorTerms:
-#         - matchExpressions:
-#             - key: node-role.kubernetes.io/edge
-#               operator: Exists
 nodepoolSelector:
   monitor.edgefarm.io/metrics: "default"
