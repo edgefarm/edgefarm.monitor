@@ -13,6 +13,7 @@ podSecurityContext: {}
 # -- Container security context (allowPrivilegeEscalation, etc.)
 containerSecurityContext: {}
 
+
 monitoring: default
 
 configmap:
