@@ -46,7 +46,7 @@ data:
                 target_label: 'unit'
     metrics:
       global:
-        scrape_interval: 1m
+        scrape_interval: 5s
         remote_write:
           - url: {{ .Values.configmap.agent_yaml.global.remote_write }}
         external_labels:
