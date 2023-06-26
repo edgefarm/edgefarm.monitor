@@ -24,7 +24,7 @@ image:
   # -- Image repo
   repository: cadvisor/cadvisor
   # -- Image tag
-  tag: v0.45.0
+  tag: v0.47.2
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image pull secrets
