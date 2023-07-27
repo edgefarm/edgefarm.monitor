@@ -3,4 +3,4 @@ mimir:
   password: password
 
 agent:
-  image: grafana/agent:v0.28.0
+  image: grafana/agent:v0.35.2
