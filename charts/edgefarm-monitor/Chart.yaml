@@ -1,0 +1,37 @@
+apiVersion: v2
+name: edgefarm-monitor
+description: A Helm chart for edgefarm.monitor.
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+keywords:
+  - edgefarm.monitor
+  - grafana
+  - grafana-agent
+  - mimir
+  - prometheus
+  - node-exporter
+sources:
+  - https://github.com/edgefarm/edgefarm.monitor
+maintainers:
+  - name: Armin Schlegel
+    email: armin.schlegel@gmx.de
+dependencies:
+  - name: grafana-operator
+    version: v5.3.0
+    repository: oci://ghcr.io/grafana-operator/helm-charts
+  - name: grafana
+    version: 6.58.6
+    repository: https://grafana.github.io/helm-charts
+  - name: grafana-dashboards
+    version: 1.5.0
+    repository: oci://ghcr.io/edgefarm/grafana-dashboards
+  - name: mimir-distributed
+    repository: https://grafana.github.io/helm-charts
+    version: 5.0.0
+  - name: grafana-agent
+    repository: oci://ghcr.io/edgefarm/edgefarm.monitor
+    version: 0.1.0
+  - name: node-exporter
+    repository: oci://ghcr.io/edgefarm/edgefarm.monitor
+    version: 0.1.0

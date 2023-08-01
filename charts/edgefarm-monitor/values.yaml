@@ -1,0 +1,190 @@
+config:
+  certificateIssuer:
+    name: edgefarm-monitor-issuer
+    # enable this if you want to create the ClusterIssuer
+    create: true
+    # the spec of the ClusterIssuer if create is true
+    spec:
+      selfSigned: {}
+
+  dataSource:
+    url: http://edgefarm-monitor-mimir-nginx.edgefarm-monitor.svc:80/prometheus
+
+  grafanaAgent:
+    # The agents' secret is used to authenticate to mimir
+    secret:
+      name: agent-secret
+      userKey: user
+      passwordKey: password
+      content:
+        externalSecret:
+          enabled: false
+          # kind: ClusterSecretStore
+          # name: doppler-auth-api
+          # remoteUserKey: GRAFANA_AGENT_USERNAME
+          # remotePasswordKey: GRAFANA_AGENT_PASSWORD
+        fixed:
+          enabled: true
+          adminUser: agent
+          adminPassword: pinkPanther
+
+  grafana:
+    dataSource:
+      # The dataSources' secret is used to authenticate to mimir
+      secret:
+        name: data-source-mimir
+        userKey: user
+        passwordKey: password
+        content:
+          externalSecret:
+            enabled: false
+            # kind: ClusterSecretStore
+            # name: doppler-auth-api
+            # remoteUserKey: MIMIR_GRAFANA_USERNAME
+            # remotePasswordKey: MIMIR_GRAFANA_PASSWORD
+          fixed:
+            enabled: true
+            adminUser: grafana
+            adminPassword: supersecret
+
+    certificate:
+      # enable this if you want to create the certificate
+      create: true
+      secretName: grafana-tls
+      hosts:
+        - grafana.localhost
+      issuerRef:
+        name: grafana-self-signed-issuer
+        # enable this if you want to create the ClusterIssuer
+        create: true
+        # the spec of the ClusterIssuer if create is true
+        spec:
+          selfSigned: {}
+
+    adminCreds:
+      # The adminCreds secret is used to authenticate to grafana UI
+      secret:
+        name: grafana-admin-creds
+        userKey: admin-user
+        passwordKey: admin-password
+        content:
+          externalSecret:
+            enabled: false
+            # kind: ClusterSecretStore
+            # name: doppler-auth-api
+            # remoteUserKey: GRAFANA_ADMIN_USER
+            # remotePasswordKey: GRAFANA_ADMIN_PASSWORD
+          fixed:
+            enabled: true
+            adminUser: admin
+            adminPassword: edgefarm
+
+  mimir:
+    auth:
+      # The mimir auth secret is used to store credentials that are used to authenticate to mimir
+      secret:
+        name: mimir-auth
+        create: true
+
+    certificate:
+      # enable this if you want to create the certificate
+      create: true
+      secretName: mimir-tls
+      hosts:
+        - mimir.localhost
+      issuerRef:
+        name: mimir-self-signed-issuer
+        # enable this if you want to create the ClusterIssuer
+        create: true
+        # the spec of the ClusterIssuer if create is true
+        spec:
+          selfSigned: {}
+
+# Sub-Charts configurations
+grafana-dashboards:
+  dashboards:
+    edgeNodes:
+      enabled: true
+
+grafana-agent:
+  configmap:
+    agent_yaml:
+      global:
+        remote_write: http://edgefarm-monitor-mimir-nginx.edgefarm-monitor.svc:80/api/v1/push
+      metrics:
+        configs:
+          edgenodes_exporter:
+            scrape_configs:
+              job:
+                node_exporter:
+                  targets:
+                    ["edgefarm-monitor-node-exporter.edgefarm-monitor.svc:9100"]
+            remote_write:
+              url: http://edgefarm-monitor-mimir-nginx.edgefarm-monitor.svc:80/api/v1/push
+
+# mimir-distributed: See the official mimir-distributed values.yaml for more information
+# https://github.com/grafana/mimir/blob/mimir-distributed-5.0.0/operations/helm/charts/mimir-distributed/values.yaml
+mimir-distributed:
+  gateway:
+    enabledNonEnterprise: true
+    replicas: 2
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - host: mimir.localhost
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: mimir-tls
+          hosts:
+            - mimir.localhost
+    nginx:
+      basicAuth:
+        enabled: true
+        existingSecret: mimir-auth
+
+# grafana: See the official grafana values.yaml for more information
+grafana:
+  replicas: 1
+  rbac:
+    # because of https://github.com/grafana/helm-charts/issues/2175
+    pspEnabled: false
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    hosts:
+      - grafana.localhost
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.localhost
+  admin:
+    existingSecret: grafana-admin-creds
+    userKey: admin-user
+    passwordKey: admin-password
+  sidecar:
+    alerts:
+      enabled: true
+      label: grafana_alert
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+    datasources:
+      enabled: true
+      label: grafana_datasource
+    plugin:
+      enabled: true
+      label: grafana_plugin
+    notifiers:
+      enabled: true
+      label: grafana_notifier
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+    security:
+      allow_embedding: true

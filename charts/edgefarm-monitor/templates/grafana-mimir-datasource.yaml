@@ -1,0 +1,77 @@
+{{- $fixedEnabled := .Values.config.grafana.dataSource.secret.content.fixed.enabled }}
+{{- $externalSecretEnabled := .Values.config.grafana.dataSource.secret.content.externalSecret.enabled }}
+
+{{- if and $fixedEnabled $externalSecretEnabled }}
+  {{- fail "Both config.grafana.dataSource.secret.content.fixed and config.grafana.dataSource.secret.content.externalSecret are enabled. Only one should be enabled." }}
+{{- else if and (not $fixedEnabled) (not $externalSecretEnabled) }}
+  {{- fail "Neither config.grafana.dataSource.secret.content.fixed nor config.grafana.dataSource.secret.content.externalSecret are enabled. One should be enabled." }}
+{{- end }}
+
+{{- if $externalSecretEnabled }}
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: {{ .Values.config.grafana.dataSource.secret.name}}
+  labels:
+    {{- include "edgefarm-monitor.labels" . | nindent 4 }}
+spec:
+  secretStoreRef:
+    kind: {{ .Values.config.grafana.dataSource.secret.content.externalSecret.kind }}
+    name: {{ .Values.config.grafana.dataSource.secret.content.externalSecret.name }}
+  target:
+    name: {{ .Values.config.grafana.dataSource.secret.name}}
+    template:
+      engineVersion: v2
+      metadata:
+        labels:
+          grafana_datasource: ""
+      data:
+        mimir-datasource.yaml: |-
+          apiVersion: 1
+          datasources:
+            - name: mimir
+              type: prometheus
+              url: {{ .Values.config.dataSource.url }}
+              access: proxy
+              basicAuth: "true"
+              basicAuthUser: "{{`{{`}} .{{ .Values.config.grafana.dataSource.secret.userKey }} }}"
+              withCredentials: "true"
+              isDefault: "true"
+              editable: "true"
+              secureJsonData: 
+                basicAuthPassword: "{{`{{`}} .{{ .Values.config.grafana.dataSource.secret.passwordKey }} }}"
+  data:
+    - secretKey: {{ .Values.config.grafana.dataSource.secret.userKey }}
+      remoteRef:
+        key: {{ .Values.config.grafana.dataSource.secret.content.externalSecret.remoteUserKey }}
+    - secretKey: {{ .Values.config.grafana.dataSource.secret.passwordKey }}
+      remoteRef:
+        key: {{ .Values.config.grafana.dataSource.secret.content.externalSecret.remotePasswordKey}}
+{{- end }}
+
+{{- if  $fixedEnabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.config.grafana.dataSource.secret.name }}
+  labels:
+    grafana_datasource: ""
+    {{- include "edgefarm-monitor.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  mimir-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: mimir
+        type: prometheus
+        access: proxy
+        url: {{ .Values.config.dataSource.url }}
+        basicAuth: "true"
+        basicAuthUser: "{{ .Values.config.grafana.dataSource.secret.content.fixed.adminUser }}"
+        withCredentials: "true"
+        isDefault: "true"
+        editable: "true"
+        secureJsonData: 
+          basicAuthPassword: "{{ .Values.config.grafana.dataSource.secret.content.fixed.adminPassword }}"
+{{- end }}

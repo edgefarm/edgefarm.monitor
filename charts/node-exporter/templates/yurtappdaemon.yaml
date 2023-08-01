@@ -8,14 +8,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-{{- include "prometheus-node-exporter.selectorLabels" . | indent 6 }}
+{{- include "node-exporter.selectorLabels" . | indent 6 }}
   workloadTemplate:
     deploymentTemplate:
       metadata:
         namespace: {{ .Values.namespace | default .Release.Namespace }}
-        name: {{ template "prometheus-node-exporter.fullname" . }}
+        name: {{ template "node-exporter.fullname" . }}
         labels: 
-{{- include "prometheus-node-exporter.labels" . | indent 10 }}
+{{- include "node-exporter.labels" . | indent 10 }}
         {{- with .Values.podAnnotations }}
         annotations:
         {{- toYaml . | nindent 10 }}
@@ -24,21 +24,21 @@ spec:
         replicas: 1
         selector:
           matchLabels:
-{{- include "prometheus-node-exporter.selectorLabels" . | indent 12 }}
+{{- include "node-exporter.selectorLabels" . | indent 12 }}
         {{- if .Values.updateStrategy }}
         strategy:
 {{ toYaml .Values.updateStrategy | indent 10 }}
         {{- end }}
         template:
           metadata:
-            labels: {{ include "prometheus-node-exporter.labels" . | indent 14 }}
+            labels: {{ include "node-exporter.labels" . | indent 14 }}
             {{- if .Values.podAnnotations }}
             annotations:
             {{- toYaml .Values.podAnnotations | nindent 15 }}
             {{- end }}
           spec:
             automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
-            serviceAccountName: {{ template "prometheus-node-exporter.serviceAccountName" . }}
+            serviceAccountName: {{ template "node-exporter.serviceAccountName" . }}
       {{- if .Values.securityContext }}
             securityContext:
 {{ toYaml .Values.securityContext | indent 14 }}
@@ -52,7 +52,7 @@ spec:
             {{- end }}
             containers:
               - name: node-exporter
-                image: {{ include "prometheus-node-exporter.image" . }}
+                image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
                 imagePullPolicy: {{ .Values.image.pullPolicy }}
                 args:
                   - --web.listen-address=[$(HOST_IP)]:{{ .Values.service.port }}

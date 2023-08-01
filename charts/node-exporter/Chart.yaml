@@ -1,6 +1,9 @@
 apiVersion: v2
 appVersion: 1.5.0
+version: 0.1.0
+type: application
 description: A Helm chart for prometheus node-exporter for EdgeFarm.monitor
+name: node-exporter
 home: https://github.com/edgefarm.monitor/charts/node_exporter/
 keywords:
   - node-exporter
@@ -10,8 +13,5 @@ keywords:
 maintainers:
   - email: armin.schlegel@ci4rail.com
     name: Armin Schlegel
-name: prometheus-node-exporter
 sources:
   - https://github.com/edgefarm.monitor/charts/node_exporter/
-type: application
-version: 0.1.0

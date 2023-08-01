@@ -1,0 +1,22 @@
+{{- if .Values.config.grafana.certificate.create }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.config.grafana.certificate.secretName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "edgefarm-monitor.labels" . | nindent 4 }}
+spec:
+  commonName: edgefarm.io
+  dnsNames:
+{{ .Values.config.grafana.certificate.hosts | toYaml | indent 4 }}
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: {{ .Values.config.certificateIssuer.name }}
+  secretName: {{ .Values.config.grafana.certificate.secretName }}
+  usages:
+  - digital signature
+  - key encipherment
+{{- end }}

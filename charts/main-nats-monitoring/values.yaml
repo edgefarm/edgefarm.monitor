@@ -1,6 +1,0 @@
-mimir:
-  username: user
-  password: password
-
-agent:
-  image: grafana/agent:v0.28.0

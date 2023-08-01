@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "prometheus-node-exporter.fullname" . }}
+  name: {{ template "node-exporter.fullname" . }}
   namespace: {{ .Values.namespace | default .Release.Namespace }}
-  labels: {{ include "prometheus-node-exporter.labels" . | indent 4 }}
+  labels: {{ include "node-exporter.labels" . | indent 4 }}
 {{- if .Values.service.annotations }}
   annotations:
 {{ toYaml .Values.service.annotations | indent 4 }}
@@ -19,4 +19,4 @@ spec:
     protocol: TCP
     name: {{ .Values.service.portName }}
   selector:
-    {{- include "prometheus-node-exporter.selectorLabels" . | indent 4 }}
+    {{- include "node-exporter.selectorLabels" . | indent 4 }}
