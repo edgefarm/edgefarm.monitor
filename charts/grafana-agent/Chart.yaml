@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 0.1.0
+appVersion: 1.0.0-beta.14
 description: A Helm chart for Grafana Agent running in a EdgeFarm cluster
 home: https://github.com/edgefarm/edgefarm.monitor/tree/beta/charts/grafana-agent
 icon: https://raw.githubusercontent.com/grafana/agent/v0.28.0/docs/sources/assets/logo_and_name.png
@@ -10,4 +10,4 @@ name: grafana-agent
 sources:
   - https://github.com/edgefarm/edgefarm.monitor/tree/beta/charts/grafana-agent
 type: application
-version: 0.1.0
+version: 1.0.0-beta.14
