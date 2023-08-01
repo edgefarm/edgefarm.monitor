@@ -3,10 +3,8 @@
 # Declare variables to be passed into your templates.
 image:
   repository: quay.io/prometheus/node-exporter
-  # Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
   tag: "v1.5.0"
   pullPolicy: IfNotPresent
-  sha: ""
 imagePullSecrets: []
 # - name: "image-pull-secret"
 
@@ -25,28 +23,6 @@ env: {}
 ##  env:
 ##    VARIABLE: value
 
-prometheus:
-  monitor:
-    enabled: false
-    additionalLabels: {}
-    namespace: ""
-    jobLabel: ""
-    scheme: http
-    basicAuth: {}
-    bearerTokenFile:
-    tlsConfig: {}
-    ## proxyUrl: URL of a proxy that should be used for scraping.
-    ##
-    proxyUrl: ""
-    ## Override serviceMonitor selector
-    ##
-    selectorOverride: {}
-    relabelings: []
-    metricRelabelings: []
-    interval: ""
-    scrapeTimeout: 10s
-    ## prometheus.monitor.apiVersion ApiVersion for the serviceMonitor Resource(defaults to "monitoring.coreos.com/v1")
-    apiVersion: ""
 ## Customize the updateStrategy if set
 updateStrategy:
   type: RollingUpdate
@@ -88,9 +64,7 @@ rbac:
   ## https://kubernetes.io/docs/concepts/policy/pod-security-policy/
   pspEnabled: true
   pspAnnotations: {}
-# for deployments that have node_exporter deployed outside of the cluster, list
-# their addresses here
-endpoints: []
+
 # Expose the service to the host network
 hostNetwork: true
 # Share the host process ID namespace
@@ -234,19 +208,6 @@ readinessProbe:
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
-# Enable vertical pod autoscaler support for prometheus-node-exporter
-verticalPodAutoscaler:
-  enabled: false
-  # List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
-  controlledResources: []
-  # Define the max allowed resources for the pod
-  maxAllowed: {}
-  # cpu: 200m
-  # memory: 100Mi
-  # Define the min allowed resources for the pod
-  minAllowed: {}
-  # cpu: 200m
-  # memory: 100Mi
 # updatePolicy:
 # Specifies whether recommended updates are applied when a Pod is started and whether recommended updates
 # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".

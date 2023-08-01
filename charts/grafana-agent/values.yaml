@@ -28,26 +28,10 @@ configmap:
               node_exporter:
                 targets:
                   [
-                    "edge-node-exporter-prometheus-node-exporter.edge-monitoring.svc:9100",
+                    "node-exporter-prometheus-node-exporter.edgefarm-monitor.svc:9100",
                   ]
           remote_write:
             url: https://mimir.edgefarm.dev/api/v1/push
-          # cadvisor is included this way
-          # job:
-          #   cadvisor:
-          #     targets: ["edge-cadvisor.edge-monitoring.svc:8080"]
-    # logs:
-    #   configs:
-    #     default:
-    #       clients:
-    #         url: http://loki-distributed-gateway.loki.svc/loki/api/v1/push
-    #         basic_auth:
-    #           username: test
-    #           password: Bb3eNlCLPGNuVzqXBc4MnyHRvDt5eJbuYDE10h9Q
-    #       scrape_configs:
-    #         job:
-    #           system:
-    #             targets: localhost
 
 rbac:
   # -- Toggle to create ClusterRole and ClusterRoleBinding
@@ -88,13 +72,13 @@ extraEnvs:
   - name: MIMIR_AGENT_USERNAME
     valueFrom:
       secretKeyRef:
-        name: mimir-agent-creds
-        key: mimirAgentUsername
+        name: agent-secret
+        key: user
   - name: MIMIR_AGENT_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: mimir-agent-creds
-        key: mimirAgentPassword
+        name: agent-secret
+        key: password
 
 # -- Resource limits and requests config
 resources: {}

@@ -10,23 +10,57 @@
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",
+    [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/grafana-agent",
+        "registry": "ghcr.io/edgefarm/edgefarm.monitor"
+      }
+    ],
+    [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/node-exporter",
+        "registry": "ghcr.io/edgefarm/edgefarm.monitor"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "cd charts/edgefarm-monitor && helm dependency build"
+      }
+    ],
+    [
+      "semantic-release-helm3",
+      {
+        "chartPath": "./charts/edgefarm-monitor",
+        "registry": "ghcr.io/edgefarm/edgefarm.monitor"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "updateChart -c charts/edgefarm-monitor/Chart.yaml -k -v ${nextRelease.version} -l charts -r oci://ghcr.io/edgefarm/edgefarm.monitor"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "charts/grafana-agent/Chart.yaml",
+          "charts/node-exporter/Chart.yaml",
+          "charts/edgefarm-monitor/Chart.yaml"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
     "@semantic-release/release-notes-generator",
     [
-      "@edgefarm/semantic-release-helm-oci",
+      "@semantic-release/github",
       {
-        "chartPath": "charts/grafana-agent",
-        "registry": "oci://ghcr.io/edgefarm/edgefarm.monitor",
-        "skipAppVersion": true
+        "successComment": false,
+        "failTitle": false
       }
-    ],
-    [
-      "@edgefarm/semantic-release-helm-oci",
-      {
-        "chartPath": "charts/node-exporter",
-        "registry": "oci://ghcr.io/edgefarm/edgefarm.monitor",
-        "skipAppVersion": true
-      }
-    ],
-    "@semantic-release/github"
+    ]
   ]
 }
