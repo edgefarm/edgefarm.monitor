@@ -59,8 +59,10 @@ Follow those simple steps, to install edgefarm.monitor in your cluster.
 Use helm3 to install the EdgeFarm.monitor chart.
 
 ```bash
-$ helm upgrade --install --create-namespace -n edgefarm-monitor edgefarm-monitor oci://ghcr.io/edgefarm/edgefarm.monitor/edgefarm-monitor --version "1.0.0-beta.14"
+helm upgrade --install --create-namespace -n edgefarm-monitor edgefarm-monitor oci://ghcr.io/edgefarm/edgefarm.monitor/edgefarm-monitor --version "1.0.0-beta.14"
 ```
+
+See `charts/edgefarm-monitor/values.yaml` for options to configure the chart.
 
 If you need information on how to use helm with OCI-based registries, please refer to the [helm documentation](https://helm.sh/docs/topics/registries/#using-an-oci-based-registry).
 
@@ -69,7 +71,7 @@ If you need information on how to use helm with OCI-based registries, please ref
 Make sure that your nodepools corresponding to your edge nodes have the labels `monitor.edgefarm.io/metrics: default` set to enable monitoring for them.
 
 ```bash
-$ kubectl label nodepools.apps.openyurt.io <name> monitor.edgefarm.io/metrics=default
+kubectl label nodepools.apps.openyurt.io <name> monitor.edgefarm.io/metrics=default
 ```
 
 
@@ -89,4 +91,4 @@ Code contributions are very much **welcome**.
 
 # 🫶 Acknowledgements
 
-Thanks to the great open source projects Grafana, Grafana Mimir, Node Exporter, Cadvisor and the Loki stack!
+Thanks to the great open source projects Grafana, Grafana Mimir and Node Exporter stack!
