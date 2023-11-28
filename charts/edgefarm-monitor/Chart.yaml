@@ -18,7 +18,7 @@ maintainers:
     email: armin.schlegel@gmx.de
 dependencies:
   - name: grafana-operator
-    version: v5.3.0
+    version: v5.5.2
     repository: oci://ghcr.io/grafana-operator/helm-charts
   - name: grafana
     version: 6.58.6
