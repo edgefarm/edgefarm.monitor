@@ -2,8 +2,8 @@ apiVersion: v2
 name: edgefarm-monitor
 description: A Helm chart for edgefarm.monitor.
 type: application
-version: 1.0.0-beta.14
-appVersion: 1.0.0-beta.14
+version: 1.0.0-beta.15
+appVersion: 1.0.0-beta.15
 keywords:
   - edgefarm.monitor
   - grafana
@@ -31,7 +31,7 @@ dependencies:
     version: 5.2.0
   - name: grafana-agent
     repository: oci://ghcr.io/edgefarm/edgefarm.monitor
-    version: 1.0.0-beta.14
+    version: 1.0.0-beta.15
   - name: node-exporter
     repository: oci://ghcr.io/edgefarm/edgefarm.monitor
-    version: 1.0.0-beta.14
+    version: 1.0.0-beta.15
