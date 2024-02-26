@@ -127,7 +127,7 @@ grafana-agent:
 mimir-distributed:
   gateway:
     enabledNonEnterprise: true
-    replicas: 2
+    replicas: 1
     ingress:
       enabled: true
       ingressClassName: nginx
@@ -144,6 +144,41 @@ mimir-distributed:
       basicAuth:
         enabled: true
         existingSecret: mimir-auth
+
+  minio:
+    enabled: true
+    mode: standalone
+    rootUser: grafana-mimir
+    buckets:
+      - name: mimir-tsdb
+        policy: none
+        purge: false
+      - name: mimir-ruler
+        policy: none
+        purge: false
+      - name: enterprise-metrics-tsdb
+        policy: none
+        purge: false
+      - name: enterprise-metrics-admin
+        policy: none
+        purge: false
+      - name: enterprise-metrics-ruler
+        policy: none
+        purge: false
+    persistence:
+      size: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    rootPassword: supersecret
+    # Changed the mc config path to '/tmp' from '/etc' as '/etc' is only writable by root and OpenShift will not permit this.
+    configPathmc: "/tmp/minio/mc/"
+    securityContext:
+      enabled: false
+      runAsUser: 1234
+      runAsGroup: 2345
+      fsGroup: 3456
 
 # grafana: See the official grafana values.yaml for more information
 grafana:
